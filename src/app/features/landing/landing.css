@@ -1,0 +1,60 @@
+.hero {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #f8fafc;
+}
+
+.hero-content {
+  max-width: 900px;
+  padding: 40px 20px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.hero-content > p {
+  font-size: 20px;
+  color: #6b7280;
+  margin-bottom: 40px;
+}
+
+.options {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.option-card {
+  width: 300px;
+  padding: 30px;
+  background: white;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.option-card:hover {
+  transform: translateY(-8px);
+}
+
+.icon {
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+.option-card h2 {
+  color: #2563eb;
+  margin-bottom: 10px;
+}
+
+.option-card p {
+  color: #6b7280;
+}

@@ -1,0 +1,80 @@
+<div class="dropdown" [class.dropdown--disabled]="isDisabled()">
+  @if (label()) {
+    <label class="dropdown-label" [attr.for]="controlId">{{ label() }}</label>
+  }
+
+  <div class="dropdown-control" [class.dropdown-control--open]="isOpen()">
+    <input
+      class="dropdown-input"
+      type="text"
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      [id]="controlId"
+      [placeholder]="isOpen() && selectedLabel() ? selectedLabel() : placeholder()"
+      [value]="displayText()"
+      [disabled]="isDisabled()"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-controls]="controlId + '-listbox'"
+      [attr.aria-activedescendant]="activeIndex() >= 0 ? optionId(activeIndex()) : null"
+      (click)="open()"
+      (input)="onSearch($any($event.target).value)"
+      (keydown)="onKeydown($event)"
+      (blur)="onBlur()"
+    />
+
+    @if (clearable() && value() && !isDisabled()) {
+      <button
+        class="dropdown-action dropdown-action--clear"
+        type="button"
+        tabindex="-1"
+        aria-label="Clear selection"
+        (click)="clear($event)"
+      >
+        &times;
+      </button>
+    }
+
+    <button
+      class="dropdown-action dropdown-action--caret"
+      type="button"
+      tabindex="-1"
+      [attr.aria-label]="isOpen() ? 'Close options' : 'Open options'"
+      [disabled]="isDisabled()"
+      (click)="toggle()"
+    >
+      <span class="caret" [class.caret--up]="isOpen()"></span>
+    </button>
+  </div>
+
+  @if (isOpen()) {
+    <div
+      class="dropdown-list"
+      role="listbox"
+      #list
+      [id]="controlId + '-listbox'"
+      [attr.aria-label]="label() || placeholder()"
+    >
+      @for (item of filteredItems(); track item.id; let i = $index) {
+        <div
+          class="dropdown-item"
+          role="option"
+          [id]="optionId(i)"
+          [class.dropdown-item--active]="i === activeIndex()"
+          [class.dropdown-item--selected]="isSelected(item)"
+          [attr.aria-selected]="isSelected(item)"
+          (click)="select(item)"
+          (mouseenter)="activeIndex.set(i)"
+        >
+          <span class="dropdown-item-text">{{ displayWith()(item) }}</span>
+
+          @if (isSelected(item)) {
+            <span class="dropdown-item-check" aria-hidden="true">&check;</span>
+          }
+        </div>
+      } @empty {
+        <p class="dropdown-empty">{{ emptyMessage() }}</p>
+      }
+    </div>
+  }
+</div>

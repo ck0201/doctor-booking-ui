@@ -1,0 +1,100 @@
+<section class="doctors-page">
+  <header class="page-header">
+    <h1>Find Doctors</h1>
+    <p>Find trusted doctors near you.</p>
+  </header>
+
+  <!-- Native submit so Enter in any field triggers the search without pulling in FormsModule. -->
+  <form class="search-panel" (submit)="$event.preventDefault(); search()">
+    <div class="form-group">
+      <label class="form-label" for="doctor-name">Doctor Name</label>
+      <input
+        class="form-control"
+        id="doctor-name"
+        type="text"
+        autocomplete="off"
+        placeholder="Search by doctor name"
+        [value]="doctorName()"
+        (input)="doctorName.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="form-group">
+      <app-searchable-dropdown
+        label="Specialty"
+        placeholder="Search specialty"
+        emptyMessage="No specialty found"
+        [items]="specialties"
+        [(value)]="selectedSpecialty"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="state">State</label>
+      <input class="form-control" id="state" type="text" [value]="state.name" readonly />
+    </div>
+
+    <div class="form-group">
+      <app-searchable-dropdown
+        label="District"
+        placeholder="Select District"
+        emptyMessage="No district found"
+        [items]="districts"
+        [(value)]="selectedDistrict"
+      />
+    </div>
+
+    <div class="form-group">
+      <app-searchable-dropdown
+        label="City"
+        [placeholder]="selectedDistrict() ? 'Select City' : 'Select a district first'"
+        emptyMessage="No city found"
+        [items]="cities()"
+        [disabled]="!selectedDistrict()"
+        [(value)]="selectedCity"
+      />
+    </div>
+
+    <div class="form-group form-group--action">
+      <button class="btn btn--primary" type="submit">Search</button>
+    </div>
+  </form>
+
+  <div class="results">
+    @if (lastSearch(); as criteria) {
+      <div class="results-summary">
+        <span class="results-summary-label">Searching for</span>
+
+        <span class="chip">{{ criteria.specialty?.name ?? 'All specialties' }}</span>
+
+        @if (criteria.doctorName) {
+          <span class="chip">{{ criteria.doctorName }}</span>
+        }
+
+        <span class="chip">
+          {{ criteria.city?.name ?? criteria.district?.name ?? criteria.state.name }}
+        </span>
+      </div>
+    }
+
+    <div class="empty-state">
+      <p class="empty-state-title">
+        @if (lastSearch()) {
+          Doctor results are on the way
+        } @else {
+          Start your search
+        }
+      </p>
+
+      <p class="empty-state-text">
+        @if (lastSearch()) {
+          Doctor cards will appear here in the next iteration.
+        } @else if (hasFilters()) {
+          Press Search to see matching doctors.
+        } @else {
+          Pick a specialty and a location, then press Search.
+        }
+      </p>
+    </div>
+  </div>
+</section>
