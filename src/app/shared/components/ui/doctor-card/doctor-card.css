@@ -1,0 +1,179 @@
+:host {
+  display: block;
+
+  /* Theming extension points — restyle without adding inputs. */
+  --doctor-card-padding: 20px;
+  --doctor-card-radius: var(--radius-card);
+  --doctor-card-accent: var(--color-primary);
+  --doctor-card-avatar-size: 72px;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 16px;
+  height: 100%;
+  padding: var(--doctor-card-padding);
+  border: 1px solid var(--color-border);
+  border-radius: var(--doctor-card-radius);
+  background: var(--color-card);
+  box-shadow: var(--shadow-soft);
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+:host(.doctor-card--interactive) .card:hover {
+  border-color: #c7d2fe;
+  box-shadow: var(--shadow-hover);
+}
+
+:host(.doctor-card--linked) .card {
+  cursor: pointer;
+}
+
+.card-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--doctor-card-avatar-size);
+  height: var(--doctor-card-avatar-size);
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--doctor-card-accent);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.card-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-body {
+  min-width: 0;
+}
+
+.card-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.card-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-name-link:hover {
+  color: var(--doctor-card-accent);
+  text-decoration: underline;
+}
+
+/* Stretched link: the whole card is clickable without nesting interactive elements. */
+.card-name-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--doctor-card-radius);
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--verified {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.card-specialty {
+  margin: 4px 0 0;
+  font-weight: 600;
+  color: var(--doctor-card-accent);
+}
+
+.card-qualifications,
+.card-practice {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.card-rating {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.card-review-count {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.card-fee {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.card-availability {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.card-availability--today {
+  color: #15803d;
+}
+
+.card-actions {
+  position: relative; /* sits above the stretched link */
+  z-index: 1;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* Collapses when the caller projects no actions. */
+.card-actions:empty {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  :host {
+    --doctor-card-padding: 16px;
+    --doctor-card-avatar-size: 56px;
+  }
+
+  .card {
+    gap: 8px 12px;
+  }
+}

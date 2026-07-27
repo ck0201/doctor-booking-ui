@@ -30,6 +30,11 @@ specialties.mock.ts
 
 locations.mock.ts
 
+doctors.mock.ts
+
+Doctors reference specialties and cities by id through a lookup helper, so the
+mocks cannot drift apart — an unknown id throws at module load.
+
 State, districts and their cities live in one file because they are one
 hierarchy; splitting them would let the ids drift apart.
 

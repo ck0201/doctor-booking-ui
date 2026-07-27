@@ -6,12 +6,14 @@ import {
   linkedSignal,
   signal,
 } from '@angular/core';
-import { SearchableDropdown } from '../../shared/components/searchable-dropdown/searchable-dropdown';
-import { LocationService } from '../../core/services/location.service';
-import { SpecialtyService } from '../../core/services/specialty.service';
-import { City, District } from '../../core/models/location.model';
-import { Specialty } from '../../core/models/specialty.model';
-import { DoctorSearchCriteria } from '../../core/models/doctor-search-criteria.model';
+import { SearchableDropdown } from '@shared/components/forms/searchable-dropdown/searchable-dropdown';
+import { DoctorCard } from '@shared/components/ui/doctor-card/doctor-card';
+import { LocationService } from '@core/services/location.service';
+import { SpecialtyService } from '@core/services/specialty.service';
+import { DoctorService } from '@core/services/doctor.service';
+import { City, District } from '@core/models/location.model';
+import { Specialty } from '@core/models/specialty.model';
+import { DoctorSearchCriteria } from '@core/models/doctor-search-criteria.model';
 
 /**
  * Doctor search page (ADR-006).
@@ -19,7 +21,7 @@ import { DoctorSearchCriteria } from '../../core/models/doctor-search-criteria.m
  */
 @Component({
   selector: 'app-doctors',
-  imports: [SearchableDropdown],
+  imports: [SearchableDropdown, DoctorCard],
   templateUrl: './doctors.html',
   styleUrl: './doctors.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +29,7 @@ import { DoctorSearchCriteria } from '../../core/models/doctor-search-criteria.m
 export class Doctors {
   private readonly locationService = inject(LocationService);
   private readonly specialtyService = inject(SpecialtyService);
+  private readonly doctorService = inject(DoctorService);
 
   readonly specialties = this.specialtyService.getSpecialties();
   readonly districts = this.locationService.getDistricts();
@@ -51,8 +54,14 @@ export class Doctors {
       cities.find((city) => city.id === previous?.value?.id) ?? null,
   });
 
-  /** Last submitted search — the input the doctor list will consume next. */
+  /** Last submitted search. Results are derived from it, not stored separately. */
   readonly lastSearch = signal<DoctorSearchCriteria | null>(null);
+
+  /** Empty until the first search, so the page opens on a prompt rather than a dump. */
+  readonly results = computed(() => {
+    const criteria = this.lastSearch();
+    return criteria ? this.doctorService.search(criteria) : [];
+  });
 
   readonly hasFilters = computed(
     () =>

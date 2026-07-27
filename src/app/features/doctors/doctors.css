@@ -114,7 +114,14 @@
 }
 
 .results-summary-label {
-  color: var(--color-text-secondary);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
 .chip {
@@ -148,6 +155,12 @@
 
 @media (min-width: 640px) {
   .search-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .doctor-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

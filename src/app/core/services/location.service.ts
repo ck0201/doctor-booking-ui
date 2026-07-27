@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { City, District, State } from '../models/location.model';
-import { DISTRICTS, LAUNCH_STATE } from '../../mock-data/locations.mock';
+import { DISTRICTS, LAUNCH_STATE } from '@mock-data/locations.mock';
 
 /**
  * Single access point for location lookups.

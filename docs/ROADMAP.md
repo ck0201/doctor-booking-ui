@@ -12,7 +12,7 @@
 
 ✅ Doctors Page — Search Panel
 
-⬜ Doctor Cards
+✅ Doctor Cards — standard mode
 
 ---
 

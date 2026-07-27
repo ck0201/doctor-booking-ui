@@ -61,27 +61,57 @@ environments/
 
 # Shared Components
 
-Examples
+Grouped by responsibility under src/app/shared/components/
 
-Navbar
+layout/
 
-Searchable Dropdown
+App shell and page structure.
 
-Search Box
+Navbar, Footer, Page Shell
 
-Doctor Card
+forms/
 
-Hospital Card
+Components that capture user input.
 
-Loading Spinner
+Searchable Dropdown, Search Box
 
-Pagination
+ui/
 
-Modal
+Presentational components that only display data.
 
-Confirmation Dialog
+Doctor Card, Hospital Card, Loading Spinner, Pagination, Modal,
+Confirmation Dialog, Reusable Button, Empty State
 
-Reusable Button
+Non-component shared code lives in sibling folders (shared/pipes,
+shared/directives), never inside these groups.
+
+See src/app/shared/components/README.md for the rules.
+
+---
+
+# Path Aliases
+
+Imports that cross a top-level boundary use an alias instead of a relative
+chain. Imports inside the same top-level folder stay relative.
+
+@core/\*
+
+src/app/core/\*
+
+@shared/\*
+
+src/app/shared/\*
+
+@features/\*
+
+src/app/features/\*
+
+@mock-data/\*
+
+src/app/mock-data/\*
+
+Defined in tsconfig.json, so moving a folder no longer rewrites every
+consumer's import path.
 
 ---
 

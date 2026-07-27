@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchableDropdown } from './searchable-dropdown';
-import { LookupItem } from '../../../core/models/lookup-item.model';
+import { LookupItem } from '@core/models/lookup-item.model';
 
 const ITEMS: LookupItem[] = [
   { id: 1, name: 'Cardiologist' },

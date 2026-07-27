@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Specialty } from '../models/specialty.model';
-import { SPECIALTIES } from '../../mock-data/specialties.mock';
+import { SPECIALTIES } from '@mock-data/specialties.mock';
 
 /**
  * Single access point for specialty lookups.

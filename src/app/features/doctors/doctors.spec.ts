@@ -49,6 +49,25 @@ describe('Doctors', () => {
     expect(component.selectedCity()).toBeNull();
   });
 
+  it('shows no results until the first search', () => {
+    component.selectedDistrict.set(component.districts[0]);
+
+    expect(component.results()).toEqual([]);
+  });
+
+  it('derives results from the submitted search, not the live filters', () => {
+    component.selectedDistrict.set(component.districts[1]); // Gorakhpur
+    component.search();
+    const searched = component.results();
+
+    expect(searched.length).toBeGreaterThan(0);
+    expect(searched.every((doctor) => doctor.practice?.city.districtId === 2)).toBe(true);
+
+    // Changing a filter without pressing Search must not move the results.
+    component.selectedDistrict.set(component.districts[0]);
+    expect(component.results()).toEqual(searched);
+  });
+
   it('captures the applied filters on search', () => {
     component.doctorName.set('  Asha  ');
     component.selectedDistrict.set(component.districts[0]);

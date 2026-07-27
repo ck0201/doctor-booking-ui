@@ -1,0 +1,91 @@
+<article class="card" [attr.aria-labelledby]="nameId">
+  @if (shows().photo) {
+    <div class="card-avatar" aria-hidden="true">
+      @if (doctor().photoUrl; as photoUrl) {
+        <img class="card-avatar-image" [src]="photoUrl" alt="" />
+      } @else {
+        <span class="card-avatar-initials">{{ initials() }}</span>
+      }
+    </div>
+  }
+
+  <div class="card-body">
+    <div class="card-heading">
+      <!--
+        role="heading" instead of h2/h3/h4: the rank is an input, and Angular
+        cannot template a dynamic tag name without duplicating the markup.
+      -->
+      <span class="card-name" role="heading" [id]="nameId" [attr.aria-level]="headingLevel()">
+        @if (detailsRoute(); as route) {
+          <a class="card-name-link" [routerLink]="route" (click)="selected.emit(doctor())">
+            {{ doctor().name }}
+          </a>
+        } @else {
+          {{ doctor().name }}
+        }
+      </span>
+
+      @if (doctor().isVerified) {
+        <span class="badge badge--verified" title="Verified profile">&check; Verified</span>
+      }
+
+      <ng-content select="[doctorCardBadge]" />
+    </div>
+
+    <p class="card-specialty">{{ doctor().primarySpecialty.name }}</p>
+
+    @if (shows().qualifications) {
+      <p class="card-qualifications">{{ doctor().qualifications }}</p>
+    }
+
+    <ul class="card-meta">
+      @if (shows().experience) {
+        <li class="card-meta-item">{{ doctor().experienceYears }} yrs experience</li>
+      }
+
+      @if (shows().rating) {
+        <li class="card-meta-item card-rating">
+          <span aria-hidden="true">&#9733; {{ doctor().rating!.value }}</span>
+          <span class="card-review-count" aria-hidden="true">
+            ({{ doctor().rating!.reviewCount }})
+          </span>
+          <span class="sr-only">{{ ratingLabel() }}</span>
+        </li>
+      }
+
+      @if (shows().fee) {
+        <li class="card-meta-item card-fee">
+          {{ doctor().consultationFee | currency: 'INR' : 'symbol' : '1.0-0' }}
+        </li>
+      }
+    </ul>
+
+    @if (shows().practice) {
+      <p class="card-practice">
+        {{ doctor().practice!.hospitalName }} &middot; {{ doctor().practice!.city.name }}
+      </p>
+    }
+
+    @if (shows().availability) {
+      <p
+        class="card-availability"
+        [class.card-availability--today]="doctor().availability!.isAvailableToday"
+      >
+        @if (doctor().availability!.isAvailableToday) {
+          Available today
+        } @else if (doctor().availability!.nextSlotLabel; as slot) {
+          Next available: {{ slot }}
+        } @else {
+          Not available today
+        }
+      </p>
+    }
+  </div>
+
+  @if (shows().actions) {
+    <!-- Booking is deliberately not implemented; callers project their own actions. -->
+    <div class="card-actions"><ng-content select="[doctorCardActions]" /></div>
+  }
+
+  <ng-content select="[doctorCardFooter]" />
+</article>

@@ -67,9 +67,9 @@ src/app/
 
 Application source code.
 
-shared/
+shared/components/
 
-Reusable UI components.
+Reusable components, grouped as layout/, forms/ and ui/.
 
 features/
 
@@ -77,7 +77,14 @@ Feature specific pages.
 
 core/
 
-Core services and infrastructure.
+Models and services.
+
+mock-data/
+
+Phase 1 dummy data, reached only through a core service.
+
+Imports across these folders use the @core, @shared, @features and @mock-data
+path aliases.
 
 ---
 

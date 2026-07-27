@@ -12,7 +12,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { LookupItem } from '../../../core/models/lookup-item.model';
+import { LookupItem } from '@core/models/lookup-item.model';
 
 let nextDropdownId = 0;
 

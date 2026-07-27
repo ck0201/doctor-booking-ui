@@ -1,4 +1,4 @@
-import { District, State } from '../core/models/location.model';
+import { City, District, State } from '@core/models/location.model';
 
 /**
  * Phase 1 mock data — replaced by GET /api/locations later.
@@ -37,3 +37,6 @@ export const DISTRICTS: readonly District[] = [
     ],
   },
 ];
+
+/** Flattened view, so other mocks can reference a city by id instead of duplicating it. */
+export const CITIES: readonly City[] = DISTRICTS.flatMap((district) => district.cities);

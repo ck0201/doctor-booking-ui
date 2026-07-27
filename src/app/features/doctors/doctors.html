@@ -63,7 +63,10 @@
   <div class="results">
     @if (lastSearch(); as criteria) {
       <div class="results-summary">
-        <span class="results-summary-label">Searching for</span>
+        <span class="results-summary-label">
+          {{ results().length }}
+          {{ results().length === 1 ? 'doctor' : 'doctors' }}
+        </span>
 
         <span class="chip">{{ criteria.specialty?.name ?? 'All specialties' }}</span>
 
@@ -75,26 +78,32 @@
           {{ criteria.city?.name ?? criteria.district?.name ?? criteria.state.name }}
         </span>
       </div>
+
+      @if (results().length) {
+        <!-- The page owns the grid; the card only owns itself. -->
+        <div class="doctor-grid" role="list">
+          @for (doctor of results(); track doctor.id) {
+            <app-doctor-card role="listitem" [doctor]="doctor" [headingLevel]="3" />
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <p class="empty-state-title">No doctors match this search</p>
+          <p class="empty-state-text">Try a wider area or clear the specialty filter.</p>
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <p class="empty-state-title">Start your search</p>
+
+        <p class="empty-state-text">
+          @if (hasFilters()) {
+            Press Search to see matching doctors.
+          } @else {
+            Pick a specialty and a location, then press Search.
+          }
+        </p>
+      </div>
     }
-
-    <div class="empty-state">
-      <p class="empty-state-title">
-        @if (lastSearch()) {
-          Doctor results are on the way
-        } @else {
-          Start your search
-        }
-      </p>
-
-      <p class="empty-state-text">
-        @if (lastSearch()) {
-          Doctor cards will appear here in the next iteration.
-        } @else if (hasFilters()) {
-          Press Search to see matching doctors.
-        } @else {
-          Pick a specialty and a location, then press Search.
-        }
-      </p>
-    </div>
   </div>
 </section>

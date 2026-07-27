@@ -1,4 +1,4 @@
-import { Specialty } from '../core/models/specialty.model';
+import { Specialty } from '@core/models/specialty.model';
 
 /**
  * Phase 1 mock data — replaced by GET /api/specialties later.
