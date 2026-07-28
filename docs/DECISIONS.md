@@ -542,4 +542,85 @@ be the second consumer that justifies it.
 DoctorDetails keeps a local `.card` for the profile header and the sidebar,
 which are surfaces without a section title.
 
+---
+
+## ADR-025
+
+Decision
+
+The hospital module mirrors the doctor module exactly: HospitalCardData narrow
+read model, Hospital aggregate extending it, HospitalService with getHospitals /
+getById / search, mock data built from seeds with ids resolved through byId.
+
+A hospital's doctor list is not stored. DoctorPracticeDetail gained a
+hospitalId, and both DoctorService.getByHospital(id) and each hospital's
+doctorCount derive from it.
+
+Reason
+
+Following the established pattern was the instruction, and the pattern earns its
+keep here: the narrow/aggregate split, the derive-don't-duplicate rule and the
+integrity tests all transfer without adaptation.
+
+The relationship needed one owner. Storing doctorIds on the hospital as well as
+practices on the doctor would let the two disagree — a doctor practising at a
+hospital that does not list them. Practices own it; the hospital derives.
+
+hospitalId replaced a name-string match, which would have been the alternative.
+That is the one change made to the completed doctor module: an additive field on
+DoctorPracticeDetail plus a value per practice seed. It is not a refactor, and
+without it "doctors at this hospital" would have matched on a display string.
+
+Details
+
+Opening hours are structured by weekday (Weekday[]) because the search results
+need an open-today indicator, which a display string cannot answer. The times
+stay display strings, so the booking boundary from ADR-020 holds. The
+'Mon – Sat' label is derived from the days by weekdayLabel, never authored
+alongside them.
+
+isOpenOn(hospital, weekday) takes the day rather than reading the clock, so it
+is pure and its tests are not time-dependent. Resolving "today" belongs to the
+caller, and lands with the card in Phase 3.
+
+isOpen24Hours is a flag rather than a 00:00–23:59 window, because three of the
+twelve hospitals genuinely run round the clock and a fake window reads as a data
+error.
+
+The hospital address carries its District as well as its City, derived from
+city.districtId. The card has to show both and should not have to look one up.
+
+Rating uses a new @core/models/rating.model.ts. DoctorRating has the same shape
+and is deliberately left alone — collapsing them would be a refactor of a
+finished module for no functional gain.
+
+One data fix
+
+Deoria City Clinic had two different address strings across two doctors'
+practices. Unified, and an integrity test now asserts every practice's name,
+city and address match its hospital.
+
 Future architectural decisions should be recorded here before implementation.
+
+## ADR-026 — Prioritize Appointment Booking before Hospital Discovery
+
+Status: Accepted
+
+### Context
+
+The Hospital domain (models, services and mock data) has already been implemented.
+
+However, the MVP should demonstrate a complete patient journey before adding another discovery flow.
+
+### Decision
+
+Appointment Booking becomes the next feature.
+
+Hospital Search and Hospital Details move to the following phase.
+
+### Consequences
+
+- Better MVP
+- Complete end-to-end demo
+- Hospital module reused later
+- No architectural changes required

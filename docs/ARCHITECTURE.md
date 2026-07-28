@@ -244,3 +244,16 @@ Internationalization
 Dark Mode
 
 Accessibility
+
+## Current Development Priority
+
+Current implementation order:
+
+1. Doctor Discovery
+2. Appointment Booking
+3. Hospital Discovery
+4. Authentication
+5. Dashboards
+6. Administration
+
+The architecture already supports Hospital Discovery, but implementation is intentionally deferred until the primary patient booking flow is complete.

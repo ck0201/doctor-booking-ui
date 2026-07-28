@@ -12,69 +12,113 @@
 
 ✅ Doctors Page — Search Panel
 
-✅ Doctor Cards — standard mode
+✅ Doctor Cards — Standard Mode
 
 ✅ Search Filters in URL — ADR-021
 
-✅ Doctor Details — profile page, not-found state, breadcrumbs
+✅ Doctor Details — Profile Page, Not Found State, Breadcrumbs
 
 ✅ UI Component Consolidation — ADR-024
 
-Avatar, RatingStars, ProfileSection, TagList, EmptyState
+- Avatar
+- RatingStars
+- ProfileSection
+- TagList
+- EmptyState
 
-Doctor cards link to /doctors/:id
+✅ Doctor Cards link to `/doctors/:id`
 
 ---
 
-## Phase 2
+## Phase 2 (Current)
 
-Hospital Listing
+### Appointment Booking
 
-Hospital Details
+⬜ Appointment Booking Page
+
+⬜ Doctor Availability (Mock Slots)
+
+⬜ Date Selection
+
+⬜ Time Slot Selection
+
+⬜ Patient Information Form
+
+⬜ Booking Confirmation Page
+
+⬜ Appointment Service (Mock)
+
+⬜ Booking Flow End-to-End
 
 ---
 
 ## Phase 3
 
-Doctor Availability
+### Hospital Discovery
 
-Appointment Booking
+✅ Models, Mock Data, HospitalService — ADR-025
 
-Booking Confirmation
+⬜ Hospital Search Page
+
+⬜ Hospital Card
+
+⬜ Hospital Details
+
+⬜ Doctors Available in Hospital (Reuse DoctorCard)
 
 ---
 
 ## Phase 4
 
-Authentication
+### Patient Experience
 
-Patient Dashboard
+⬜ My Appointments
 
-Doctor Dashboard
+⬜ Appointment Details
+
+⬜ Appointment Cancellation
+
+⬜ Appointment Rescheduling
 
 ---
 
 ## Phase 5
 
-Admin Portal
+### Authentication & Dashboards
 
-Reporting
+⬜ Authentication (OTP)
 
-Analytics
+⬜ Patient Dashboard
+
+⬜ Doctor Dashboard
 
 ---
 
 ## Phase 6
 
-Video Consultation
+### Administration
 
-Notifications
+⬜ Admin Portal
 
-PWA
+⬜ Reporting
 
-Offline Support
+⬜ Analytics
 
-AI Assistant
+---
+
+## Phase 7
+
+### Advanced Features
+
+⬜ Video Consultation
+
+⬜ Notifications
+
+⬜ PWA
+
+⬜ Offline Support
+
+⬜ AI Assistant
 
 ---
 
@@ -82,12 +126,9 @@ AI Assistant
 
 Raised during earlier phases, not yet scheduled.
 
-Doctor Card compact and featured modes (ADR-017)
-
-Doctor Card skeleton, once data loads asynchronously
-
-Scroll position restoration, with the Doctor Details route
-
-Navbar on every page, or removal from UI_GUIDELINES
-
-ESLint
+- Doctor Card Compact Mode (ADR-017)
+- Doctor Card Featured Mode (ADR-017)
+- Doctor Card Skeleton (when async data is introduced)
+- Scroll Position Restoration for Doctor Details
+- Navbar on Every Page (or remove from UI_GUIDELINES)
+- ESLint

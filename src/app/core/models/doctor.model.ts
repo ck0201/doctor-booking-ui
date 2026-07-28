@@ -91,6 +91,12 @@ export interface PracticeTiming {
 }
 
 export interface DoctorPracticeDetail extends DoctorPractice {
+  /**
+   * The hospital this practice is at. Makes "doctors at this hospital" an exact
+   * query instead of a name-string match, and keeps the relationship in one
+   * place: a hospital's doctor list is derived from these.
+   */
+  readonly hospitalId: number;
   readonly addressLine: string;
   /** Consultation fee in INR at this practice. */
   readonly consultationFee?: number;

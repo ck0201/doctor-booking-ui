@@ -66,6 +66,33 @@ describe('DoctorService', () => {
     });
   });
 
+  describe('getByHospital', () => {
+    it('returns the doctors who list a practice there', () => {
+      const atClinic = service.getByHospital(2);
+
+      expect(atClinic.map((doctor) => doctor.name)).toEqual([
+        'Dr. Asha Verma',
+        'Dr. Rakesh Mishra',
+      ]);
+    });
+
+    it('includes a doctor whose second practice is at the hospital', () => {
+      // Dr. Anil Gupta's primary practice is elsewhere; his Saturday clinic is here.
+      expect(service.getByHospital(12).map((doctor) => doctor.name)).toContain('Dr. Anil Gupta');
+    });
+
+    it('returns an empty list for a hospital nobody practises at', () => {
+      expect(service.getByHospital(9999)).toEqual([]);
+    });
+
+    it('returns narrow card data', () => {
+      // @ts-expect-error a hospital's doctor list never carries profile detail.
+      const asProfiles: readonly Doctor[] = service.getByHospital(2);
+
+      expect(asProfiles.length).toBeGreaterThan(0);
+    });
+  });
+
   describe('search still returns narrow card data', () => {
     it('is assignable to DoctorCardData', () => {
       const results: readonly DoctorCardData[] = service.search(criteria());

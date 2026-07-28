@@ -73,6 +73,8 @@ const SERVICES_BY_SPECIALTY: Readonly<Record<number, readonly string[]>> = {
 };
 
 interface PracticeSeed {
+  /** Must match a hospital in hospitals.mock.ts; asserted by the integrity tests. */
+  readonly hospitalId: number;
   readonly hospitalName: string;
   readonly cityId: number;
   readonly addressLine: string;
@@ -118,6 +120,7 @@ function buildDoctor(seed: DoctorSeed): Doctor {
   const experience = seed.experience ?? [];
 
   const practices: readonly DoctorPracticeDetail[] = seed.practices.map((practice) => ({
+    hospitalId: practice.hospitalId,
     hospitalName: practice.hospitalName,
     city: city(practice.cityId),
     addressLine: practice.addressLine,
@@ -187,15 +190,17 @@ const SEEDS: readonly DoctorSeed[] = [
     isVerified: true,
     practices: [
       {
+        hospitalId: 1,
         hospitalName: 'Sanjeevani Heart Centre',
         cityId: 101,
         addressLine: 'Civil Lines, near Collectorate, Deoria',
         consultationFee: 700,
       },
       {
+        hospitalId: 2,
         hospitalName: 'Deoria City Clinic',
         cityId: 101,
-        addressLine: 'Station Road, Deoria',
+        addressLine: 'Station Road, opposite Post Office, Deoria',
         consultationFee: 500,
         timings: WEEKDAY_EVENINGS,
       },
@@ -222,6 +227,7 @@ const SEEDS: readonly DoctorSeed[] = [
     availability: { isAvailableToday: true },
     practices: [
       {
+        hospitalId: 2,
         hospitalName: 'Deoria City Clinic',
         cityId: 101,
         addressLine: 'Station Road, opposite Post Office, Deoria',
@@ -250,6 +256,7 @@ const SEEDS: readonly DoctorSeed[] = [
     isVerified: true,
     practices: [
       {
+        hospitalId: 3,
         hospitalName: 'Matru Chhaya Nursing Home',
         cityId: 102,
         addressLine: 'Hospital Road, Salempur',
@@ -272,6 +279,7 @@ const SEEDS: readonly DoctorSeed[] = [
     availability: { isAvailableToday: true },
     practices: [
       {
+        hospitalId: 4,
         hospitalName: 'Smile Care Dental',
         cityId: 103,
         addressLine: 'Main Market, Barhaj',
@@ -298,6 +306,7 @@ const SEEDS: readonly DoctorSeed[] = [
     availability: { isAvailableToday: false, nextSlotLabel: 'Monday, 09:30 AM' },
     practices: [
       {
+        hospitalId: 5,
         hospitalName: 'Rudrapur Child Care',
         cityId: 104,
         addressLine: 'Bazaar Road, Rudrapur',
@@ -334,6 +343,7 @@ const SEEDS: readonly DoctorSeed[] = [
     isVerified: true,
     practices: [
       {
+        hospitalId: 7,
         hospitalName: 'Gorakhpur Bone & Joint Hospital',
         cityId: 201,
         addressLine: 'Medical College Road, Gorakhpur',
@@ -363,6 +373,7 @@ const SEEDS: readonly DoctorSeed[] = [
     availability: { isAvailableToday: false, nextSlotLabel: 'Thursday, 05:00 PM' },
     practices: [
       {
+        hospitalId: 8,
         hospitalName: 'Skin & Aesthetics Clinic',
         cityId: 201,
         addressLine: 'Golghar, Gorakhpur',
@@ -401,12 +412,14 @@ const SEEDS: readonly DoctorSeed[] = [
     isVerified: true,
     practices: [
       {
+        hospitalId: 9,
         hospitalName: 'Purvanchal Neuro Centre',
         cityId: 202,
         addressLine: 'Bansgaon Main Road, Bansgaon',
         consultationFee: 1000,
       },
       {
+        hospitalId: 12,
         hospitalName: 'Gorakhpur General Hospital',
         cityId: 201,
         addressLine: 'Park Road, Gorakhpur',
@@ -433,6 +446,7 @@ const SEEDS: readonly DoctorSeed[] = [
     availability: { isAvailableToday: true },
     practices: [
       {
+        hospitalId: 10,
         hospitalName: 'Campierganj ENT Care',
         cityId: 203,
         addressLine: 'Tehsil Road, Campierganj',
@@ -458,6 +472,7 @@ const SEEDS: readonly DoctorSeed[] = [
     availability: { isAvailableToday: true },
     practices: [
       {
+        hospitalId: 11,
         hospitalName: 'Drishti Eye Hospital',
         cityId: 204,
         addressLine: 'Sahjanwa Bypass, Sahjanwa',
@@ -495,6 +510,7 @@ const SEEDS: readonly DoctorSeed[] = [
     isVerified: true,
     practices: [
       {
+        hospitalId: 12,
         hospitalName: 'Gorakhpur General Hospital',
         cityId: 201,
         addressLine: 'Park Road, Gorakhpur',
@@ -512,6 +528,7 @@ const SEEDS: readonly DoctorSeed[] = [
       'Psychiatrist offering counselling and treatment for anxiety, depression and sleep disorders.',
     practices: [
       {
+        hospitalId: 6,
         hospitalName: 'Mind Wellness Clinic',
         cityId: 101,
         addressLine: 'Kacheri Road, Deoria',

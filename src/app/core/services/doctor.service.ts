@@ -24,6 +24,18 @@ export class DoctorService {
   }
 
   /**
+   * Doctors listing a practice at this hospital.
+   *
+   * Card data, so a hospital profile can hand these straight to DoctorCard
+   * rather than growing a doctor list of its own.
+   */
+  getByHospital(hospitalId: number): readonly DoctorCardData[] {
+    return DOCTORS.filter((doctor) =>
+      doctor.practices.some((practice) => practice.hospitalId === hospitalId),
+    );
+  }
+
+  /**
    * Every criterion is optional and narrows the result set.
    * State is not filtered on — the MVP is single-state (ADR-004).
    */
