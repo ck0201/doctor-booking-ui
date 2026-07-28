@@ -274,4 +274,108 @@ Note
 yet, so a default link would bounce off the wildcard route to the landing
 page. The details page (Phase 3) flips the default on.
 
+---
+
+## ADR-020
+
+Decision
+
+Doctor extends DoctorCardData. List operations return the narrow
+DoctorCardData; only getById returns the full Doctor.
+
+Reason
+
+Honours the ADR-016 promise that the aggregate satisfies the card contract, so
+a profile page hands its Doctor straight to DoctorCard with no mapping. Search
+results have no business carrying review arrays and practice timings, and the
+narrow return type is what stops them growing into it.
+
+The mock holds one object either way, so today the narrowing is a compile-time
+contract rather than a smaller payload. The real list endpoint will send less.
+A @ts-expect-error test fails the build if either list method widens.
+
+Amendment after implementation
+
+Card-level fields that duplicate profile detail are DERIVED when the data is
+built, never authored twice:
+
+primarySpecialty  <- specialties[0]
+
+qualifications    <- education degrees, joined
+
+consultationFee   <- practices[0].consultationFee
+
+practice          <- practices[0]
+
+rating            <- ratingBreakdown
+
+experienceYears   <- DATA_AS_OF_YEAR minus the earliest role
+
+This was not in the approved design, which authored rating and
+experienceYears separately. Two sources for the same fact drift, and a card
+contradicting the profile it links to is the most visible way this demo could
+embarrass itself. Deriving makes that class of bug unrepresentable, and the
+consistency suite asserts each rule.
+
+Consequences
+
+DATA_AS_OF_YEAR is a fixed constant, not the current date, so experience
+figures and tests never go stale.
+
+PracticeTiming stays display strings. Structuring it into slots is the first
+task of booking, and keeping it as text is what holds that boundary.
+
+Reviews live in doctor-reviews.mock.ts keyed by doctor id, so DoctorReview
+needs no doctorId field it would not have in an API response. rating.
+reviewCount counts everyone who rated; reviews holds only the written subset,
+so reviews.length is deliberately smaller.
+
+Note
+
+ADR-019 is reserved for the doctors route group and feature folder split,
+recorded when Step 3 lands.
+
+---
+
+## ADR-021
+
+Decision
+
+The URL is the source of truth for the submitted doctor search.
+
+/doctors?name=asha&specialty=1&district=1&city=101
+
+Results are derived from the query parameters. Pressing Search does not set
+state — it navigates, and everything downstream reacts to the navigation.
+
+Reason
+
+Raised while designing Doctor Details. Once a card links to a profile, back
+navigation would destroy a search held in component state and drop the user on
+an empty prompt after five filters. Deriving from the URL fixes that and gives
+shareable searches, refresh survival and deep-linkable specialty pages for
+roughly the same code.
+
+Details
+
+Panel controls stay local signals seeded from the URL through linkedSignal, so
+typing does not rewrite history on every keystroke. They re-seed whenever the
+URL changes, which is what makes back and forward work.
+
+Parameters carry ids, not labels. Anything that is not a positive integer id is
+ignored, as is a city that does not belong to the district in the URL — a
+hand-edited URL degrades instead of breaking.
+
+A bare /doctors is the pristine state, so a search submitted with no filters
+would be indistinguishable from a first visit. That case alone adds
+`searched=1`; it never appears alongside real filters, so shareable URLs stay
+clean.
+
+Enables withComponentInputBinding(), so pages read parameters as signals
+instead of injecting ActivatedRoute. Doctor Details will read :id the same way.
+
+Consequence
+
+`lastSearch` became `appliedCriteria` and is now computed, not written.
+
 Future architectural decisions should be recorded here before implementation.

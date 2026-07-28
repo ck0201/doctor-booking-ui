@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DoctorCardData } from '../models/doctor.model';
+import { Doctor, DoctorCardData } from '../models/doctor.model';
 import { DoctorSearchCriteria } from '../models/doctor-search-criteria.model';
 import { DOCTORS } from '@mock-data/doctors.mock';
 
@@ -7,11 +7,20 @@ import { DOCTORS } from '@mock-data/doctors.mock';
  * Single access point for doctor data.
  * Backed by mock data during Phase 1 (ADR-008); `search` becomes
  * POST /api/doctors/search without the caller changing.
+ *
+ * List operations return the narrow DoctorCardData and detail returns the full
+ * Doctor (ADR-020). The mock holds one object either way, so the narrowing is
+ * a compile-time contract; the real API will genuinely send a smaller payload.
  */
 @Injectable({ providedIn: 'root' })
 export class DoctorService {
   getDoctors(): readonly DoctorCardData[] {
     return DOCTORS;
+  }
+
+  /** The full profile. Undefined for an unknown id — callers render not-found. */
+  getById(id: number): Doctor | undefined {
+    return DOCTORS.find((doctor) => doctor.id === id);
   }
 
   /**

@@ -14,6 +14,12 @@
 
 ✅ Doctor Cards — standard mode
 
+✅ Search Filters in URL — ADR-021
+
+🚧 Doctor Details
+
+Profile demo page. Booking excluded.
+
 ---
 
 ## Phase 2
@@ -26,11 +32,11 @@ Hospital Details
 
 ## Phase 3
 
-Doctor Details
-
 Doctor Availability
 
 Appointment Booking
+
+Booking Confirmation
 
 ---
 
@@ -65,3 +71,19 @@ PWA
 Offline Support
 
 AI Assistant
+
+---
+
+## Deferred
+
+Raised during earlier phases, not yet scheduled.
+
+Doctor Card compact and featured modes (ADR-017)
+
+Doctor Card skeleton, once data loads asynchronously
+
+Scroll position restoration, with the Doctor Details route
+
+Navbar on every page, or removal from UI_GUIDELINES
+
+ESLint

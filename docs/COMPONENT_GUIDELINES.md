@@ -15,3 +15,15 @@ Accessibility
 When to split components
 
 When NOT to split components
+
+Shared component rules
+
+Feature component rules
+
+When to extract
+
+Naming conventions
+
+Input/output rules
+
+Projection rules

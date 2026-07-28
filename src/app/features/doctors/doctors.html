@@ -61,7 +61,7 @@
   </form>
 
   <div class="results">
-    @if (lastSearch(); as criteria) {
+    @if (appliedCriteria(); as criteria) {
       <div class="results-summary">
         <span class="results-summary-label">
           {{ results().length }}
