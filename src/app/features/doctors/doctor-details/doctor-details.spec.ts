@@ -21,7 +21,11 @@ describe('DoctorDetails', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(
-          [{ path: 'doctors', loadChildren: () => import('../doctors.routes') }],
+          [
+            { path: 'doctors', loadChildren: () => import('../doctors.routes') },
+            // Registered so the Book Appointment CTA can actually be followed.
+            { path: 'book', loadChildren: () => import('@features/booking/booking.routes') },
+          ],
           withComponentInputBinding(),
         ),
       ],
@@ -138,11 +142,46 @@ describe('DoctorDetails', () => {
       expect(query('nav[aria-label="Breadcrumb"]')).toBeTruthy();
     });
 
-    it('reserves the booking region without filling it', async () => {
+    it('offers a Book Appointment call to action', async () => {
+      await open('1');
+      const cta = query('[data-testid="book-appointment"]');
+
+      expect(cta).toBeTruthy();
+      expect(cta?.textContent?.trim()).toBe('Book Appointment');
+      expect(cta?.getAttribute('href')).toBe('/book/1');
+    });
+
+    it('styles the call to action with the shared button, not a new one', async () => {
+      await open('1');
+      const cta = query('[data-testid="book-appointment"]')!;
+
+      expect(cta.tagName).toBe('A');
+      expect(cta.classList.contains('btn')).toBe(true);
+      expect(cta.classList.contains('btn--primary')).toBe(true);
+    });
+
+    it('points the call to action at the doctor being viewed', async () => {
+      await open('8');
+
+      expect(query('[data-testid="book-appointment"]')?.getAttribute('href')).toBe('/book/8');
+    });
+
+    it('navigates to the booking page when followed', async () => {
       await open('1');
 
-      expect(text()).not.toContain('Book');
-      expect(query('button')).toBeNull();
+      query('[data-testid="book-appointment"]')!.click();
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe('/book/1');
+    });
+
+    it('keeps the rest of the sidebar intact around it', async () => {
+      await open('1');
+
+      // The CTA sits inside the practice card, below the fee it relates to.
+      expect(query('.side-card [data-testid="book-appointment"]')).toBeTruthy();
+      expect(query('.side-fee')).toBeTruthy();
+      expect(query('.side-title')).toBeTruthy();
     });
 
     it('degrades for a doctor with only the required fields', async () => {

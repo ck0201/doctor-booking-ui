@@ -1,0 +1,56 @@
+<div class="confirmation" data-testid="booking-confirmed">
+  <app-empty-state class="headline" title="Appointment confirmed">
+    <span class="tick" aria-hidden="true">&check;</span>
+    <span class="sr-only">Success.</span>
+    Your appointment is booked. Quote reference
+    <strong data-testid="booking-reference">{{ reference() }}</strong> when you arrive.
+  </app-empty-state>
+
+  <app-profile-section title="Appointment details">
+    <dl class="details">
+      <div class="row">
+        <dt>Reference</dt>
+        <dd>{{ reference() }}</dd>
+      </div>
+
+      <div class="row">
+        <dt>Doctor</dt>
+        <dd data-testid="confirmed-doctor">
+          {{ doctor().name }}
+          <span class="muted">· {{ doctor().primarySpecialty.name }}</span>
+        </dd>
+      </div>
+
+      <div class="row">
+        <dt>Date</dt>
+        <dd data-testid="confirmed-date">{{ dateLabel() }}</dd>
+      </div>
+
+      <div class="row">
+        <dt>Time</dt>
+        <dd data-testid="confirmed-time">{{ timeLabel() }}</dd>
+      </div>
+
+      <div class="row">
+        <dt>Patient</dt>
+        <dd data-testid="confirmed-patient">{{ patient().fullName }}</dd>
+      </div>
+
+      @if (doctor().practice; as practice) {
+        <div class="row">
+          <dt>Where</dt>
+          <dd>
+            {{ practice.hospitalName }} <span class="muted">· {{ practice.city.name }}</span>
+          </dd>
+        </div>
+      }
+    </dl>
+
+    <div class="actions">
+      <a class="btn btn--primary" [routerLink]="['/doctors', doctor().id]"
+        >Back to doctor profile</a
+      >
+      <a class="btn btn--ghost" routerLink="/doctors">Find another doctor</a>
+    </div>
+  </app-profile-section>
+</div>

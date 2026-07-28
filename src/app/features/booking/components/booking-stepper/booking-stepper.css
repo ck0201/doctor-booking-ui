@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.step-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-card);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step--current {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.step--current .step-marker {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.step--done .step-marker {
+  border-color: #15803d;
+  background: #dcfce7;
+  color: #15803d;
+}

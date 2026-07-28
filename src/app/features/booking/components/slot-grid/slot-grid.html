@@ -1,0 +1,24 @@
+@if (slots().length) {
+  <ul class="slots" aria-label="Available times">
+    @for (slot of slots(); track slot.id) {
+      <li>
+        <button
+          class="slot"
+          type="button"
+          [class.slot--selected]="slot.id === selectedSlotId()"
+          [disabled]="!slot.isAvailable"
+          [attr.aria-pressed]="slot.id === selectedSlotId()"
+          (click)="select(slot)"
+        >
+          {{ slot.startsAt }}
+
+          @if (!slot.isAvailable) {
+            <span class="sr-only">— already booked</span>
+          }
+        </button>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="slots-empty">{{ emptyMessage() }}</p>
+}

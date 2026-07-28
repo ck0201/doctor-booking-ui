@@ -82,6 +82,18 @@ body {
   background: var(--color-primary-dark);
 }
 
+/* Secondary action sitting next to a primary one. */
+.btn--ghost {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-card);
+  color: var(--color-text);
+}
+
+.btn--ghost:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 /* Visible to screen readers only. */
 .sr-only {
   position: absolute;

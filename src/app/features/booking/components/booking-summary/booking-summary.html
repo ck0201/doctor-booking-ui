@@ -1,0 +1,54 @@
+<dl class="summary">
+  <div class="row">
+    <dt>Doctor</dt>
+    <dd>
+      {{ doctor().name }}
+      <span class="muted">· {{ doctor().primarySpecialty.name }}</span>
+    </dd>
+  </div>
+
+  @if (doctor().practice; as practice) {
+    <div class="row">
+      <dt>Where</dt>
+      <dd>
+        {{ practice.hospitalName }} <span class="muted">· {{ practice.city.name }}</span>
+      </dd>
+    </div>
+  }
+
+  <div class="row">
+    <dt>When</dt>
+    <dd>
+      @if (whenLabel(); as when) {
+        {{ when }}
+      } @else {
+        <span class="pending">Pick a date and time</span>
+      }
+    </dd>
+  </div>
+
+  <div class="row">
+    <dt>Patient</dt>
+    <dd>
+      @if (patientLabel(); as label) {
+        {{ label }}
+      } @else {
+        <span class="pending">Add the patient’s details</span>
+      }
+    </dd>
+  </div>
+
+  @if (patient().reasonForVisit.trim(); as reason) {
+    <div class="row">
+      <dt>Reason</dt>
+      <dd>{{ reason }}</dd>
+    </div>
+  }
+
+  @if (feeLabel(); as fee) {
+    <div class="row row--total">
+      <dt>Consultation fee</dt>
+      <dd>{{ fee | currency: 'INR' : 'symbol' : '1.0-0' }}</dd>
+    </div>
+  }
+</dl>

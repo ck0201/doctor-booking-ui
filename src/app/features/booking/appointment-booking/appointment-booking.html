@@ -1,0 +1,96 @@
+<section class="booking-page">
+  @if (doctor(); as doctor) {
+    @if (confirmedResponse(); as confirmed) {
+      <app-booking-confirmation
+        [reference]="confirmed.reference!"
+        [doctor]="doctor"
+        [slot]="confirmed.slot!"
+        [patient]="patient()"
+      />
+    } @else {
+      <header class="page-header">
+        <h1>Book an Appointment</h1>
+        <app-booking-stepper [steps]="steps" [currentStep]="currentStep()" />
+      </header>
+
+      <div class="layout">
+        <div class="main">
+          <app-doctor-card
+            class="doctor-summary"
+            [doctor]="doctor"
+            [headingLevel]="2"
+            [omit]="['availability', 'actions']"
+            [detailsRoute]="['/doctors', doctor.id]"
+          />
+
+          @if (hasAvailability()) {
+            <app-profile-section title="Choose a date">
+              <app-date-selector [days]="availability().days" [(selectedDate)]="selectedDate" />
+            </app-profile-section>
+
+            <app-profile-section title="Choose a time">
+              <app-slot-grid
+                [slots]="slotsForSelectedDate()"
+                [(selectedSlotId)]="selectedSlotId"
+                emptyMessage="Pick a date to see available times."
+              />
+            </app-profile-section>
+
+            <app-profile-section title="Patient details">
+              <app-patient-form [(patient)]="patient" [showAllErrors]="submitAttempted()" />
+            </app-profile-section>
+          } @else {
+            <app-empty-state data-testid="no-availability" title="No slots published yet">
+              {{ doctor.name }} has not opened any appointment slots. Try another doctor, or check
+              back later.
+
+              <a emptyStateActions class="btn btn--primary" routerLink="/doctors">
+                Find another doctor
+              </a>
+            </app-empty-state>
+          }
+        </div>
+
+        @if (hasAvailability()) {
+          <aside class="side">
+            <app-profile-section title="Your appointment">
+              <app-booking-summary
+                [doctor]="doctor"
+                [slot]="selectedSlot()"
+                [patient]="patient()"
+              />
+
+              @if (rejectionMessage(); as message) {
+                <p class="error" role="alert" data-testid="booking-rejected">{{ message }}</p>
+              }
+
+              <button
+                class="btn btn--primary confirm"
+                type="button"
+                data-testid="confirm-appointment"
+                [disabled]="!canConfirm()"
+                (click)="confirm()"
+              >
+                @if (isSubmitting()) {
+                  Booking…
+                } @else {
+                  Confirm Appointment
+                }
+              </button>
+
+              <p class="note">You can pay at the clinic. No payment is taken online.</p>
+            </app-profile-section>
+          </aside>
+        }
+      </div>
+    }
+  } @else {
+    <app-empty-state class="outcome" data-testid="not-found" title="Doctor not found">
+      We could not find a doctor for
+      <strong data-testid="requested-id">{{ doctorId() }}</strong
+      >, so there is nothing to book.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/doctors">Back to doctor search</a>
+    </app-empty-state>
+  }
+</section>

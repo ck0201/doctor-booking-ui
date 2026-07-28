@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  width: 100%;
+  padding: 10px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-input);
+  background: var(--color-card);
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.slot:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.slot--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.slot:disabled {
+  background: #f3f4f6;
+  border-style: dashed;
+  color: #9ca3af;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.slots-empty {
+  margin: 0;
+  color: var(--color-text-secondary);
+}

@@ -1,0 +1,98 @@
+<div class="fields">
+  <div class="field">
+    <label class="field-label" for="patient-name">Patient Name</label>
+    <input
+      class="form-control"
+      id="patient-name"
+      type="text"
+      autocomplete="name"
+      placeholder="Full name"
+      [value]="patient().fullName"
+      [attr.aria-invalid]="errorFor('fullName') ? 'true' : null"
+      [attr.aria-describedby]="errorFor('fullName') ? 'patient-name-error' : null"
+      (input)="update('fullName', $any($event.target).value)"
+      (blur)="markTouched('fullName')"
+    />
+    @if (errorFor('fullName'); as error) {
+      <p class="field-error" id="patient-name-error">{{ error }}</p>
+    }
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="patient-phone">Mobile Number</label>
+    <input
+      class="form-control"
+      id="patient-phone"
+      type="tel"
+      inputmode="numeric"
+      maxlength="10"
+      autocomplete="tel"
+      placeholder="10-digit number"
+      [value]="patient().phoneNumber"
+      [attr.aria-invalid]="errorFor('phoneNumber') ? 'true' : null"
+      [attr.aria-describedby]="errorFor('phoneNumber') ? 'patient-phone-error' : null"
+      (input)="update('phoneNumber', $any($event.target).value)"
+      (blur)="markTouched('phoneNumber')"
+    />
+    @if (errorFor('phoneNumber'); as error) {
+      <p class="field-error" id="patient-phone-error">{{ error }}</p>
+    }
+  </div>
+
+  <div class="field">
+    <label class="field-label" for="patient-age">Age</label>
+    <input
+      class="form-control"
+      id="patient-age"
+      type="number"
+      inputmode="numeric"
+      min="1"
+      max="120"
+      placeholder="Years"
+      [value]="patient().age"
+      [attr.aria-invalid]="errorFor('age') ? 'true' : null"
+      [attr.aria-describedby]="errorFor('age') ? 'patient-age-error' : null"
+      (input)="update('age', $any($event.target).value)"
+      (blur)="markTouched('age')"
+    />
+    @if (errorFor('age'); as error) {
+      <p class="field-error" id="patient-age-error">{{ error }}</p>
+    }
+  </div>
+
+  <fieldset class="field field--gender">
+    <legend class="field-label">Gender</legend>
+
+    <div class="choices">
+      @for (option of genders; track option.value) {
+        <button
+          class="choice"
+          type="button"
+          [class.choice--selected]="patient().gender === option.value"
+          [attr.aria-pressed]="patient().gender === option.value"
+          (click)="update('gender', option.value); markTouched('gender')"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    @if (errorFor('gender'); as error) {
+      <p class="field-error">{{ error }}</p>
+    }
+  </fieldset>
+
+  <div class="field field--wide">
+    <label class="field-label" for="patient-reason"
+      >Reason for Visit <span class="optional">(optional)</span></label
+    >
+    <textarea
+      class="form-control form-control--area"
+      id="patient-reason"
+      rows="3"
+      placeholder="Briefly describe the problem"
+      [value]="patient().reasonForVisit"
+      (input)="update('reasonForVisit', $any($event.target).value)"
+    ></textarea>
+  </div>
+</div>

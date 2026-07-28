@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+
+.days {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 4px 0;
+  overflow-x: auto;
+  list-style: none;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 104px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-input);
+  background: var(--color-card);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.day:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.day--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.day:disabled {
+  background: #f3f4f6;
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.day-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.day-count {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.day--selected .day-count {
+  color: var(--color-primary-dark);
+}

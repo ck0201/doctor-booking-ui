@@ -600,6 +600,113 @@ Deoria City Clinic had two different address strings across two doctors'
 practices. Unified, and an integrity test now asserts every practice's name,
 city and address match its hospital.
 
+---
+
+## ADR-026
+
+Decision
+
+Booking follows the established layout rather than a domains/ tree: models in
+core/models, service in core/services, mock in mock-data, page and its parts in
+features/booking. The five booking components live in the feature, not in shared.
+
+Reason
+
+The brief specified domains/booking/{models,services,mocks,types,utils} and also
+said to follow the existing architecture and mirror the hospital domain. Those
+conflict — hospital is not built that way and nothing in the repo is. Confirmed
+with the author before writing anything; a second organisational scheme would
+have left booking unlike doctor and hospital forever.
+
+The components stay in the feature because none has a second consumer.
+BookingStepper, DateSelector and SlotGrid are the candidates for shared/ui the
+day something else needs them, which is the same rule ADR-024 followed.
+
+Slot times
+
+This is where the timing boundary held since ADR-020 finally moves. Opening
+hours and practice timings stayed display strings so that slots would be the
+app's first machine-readable times, and they are: BookingSlot carries an ISO
+date plus display times, and the calendar helpers parse in UTC so a label never
+shifts by a day depending on the machine.
+
+The availability window is a fixed constant, not "the next seven days". A moving
+window would make every assertion depend on the day the suite runs.
+
+State
+
+Local signals only, as instructed. Availability, the chosen day, the chosen slot
+and validity are computed or linkedSignal off the route parameter; nothing is
+stored outside the component and no store was introduced. A single page's worth
+of state does not need one.
+
+selectedSlotId resets from the slot list rather than the selected date. Two
+doctors can share a first available date, and keying the reset off the date left
+a slot id belonging to the previous doctor. Caught by a test.
+
+Service shape
+
+Synchronous, like every other service (ADR-008). createBooking rejects rather
+than throws, so callers render a message instead of handling an exception, and
+it is stateless — the slot is not marked taken, because no persistence exists to
+hold that. Both are noted as assumptions for the review.
+
+Validation lives in @core/utils/booking-validation.ts so the form and the
+Confirm button apply one set of rules, and the service can refuse a request that
+never went through the form.
+
+Out of scope, as instructed
+
+No confirmation destination: a successful request is reported in place. No
+payment, authentication, OTP or notifications. The page says payment happens at
+the clinic rather than implying an online step that does not exist.
+
+---
+
+## ADR-027
+
+Decision
+
+Booking confirmation is a state of the booking page, not a route.
+BookingConfirmation lives in features/booking/components and composes the
+existing EmptyState and ProfileSection.
+
+Reason
+
+A confirmation has nothing to show unless a booking just happened in this
+component, so a route would need either state passed through the router or a
+persisted booking to read back. Neither exists, and both were out of scope. As a
+state it is reachable, testable and honest about what it depends on.
+
+No new success component was written: the headline is EmptyState and the detail
+list sits in ProfileSection, both untouched.
+
+Duplicate submission
+
+confirm() guards on canConfirm() before it does anything, and canConfirm()
+includes "no confirmed response yet" and "not currently submitting". The guard,
+not the disabled attribute, is what actually prevents a double booking: a second
+click can land before change detection has disabled the button, and the guard
+still drops it. There is a test that clicks twice without a render in between.
+
+isSubmitting is set around the call and cleared in a finally. With a synchronous
+service the window is instantaneous, so the flag changes nothing visible today —
+it exists so the button is already bound to it and the guard already respects it.
+Making the service async needs an await and nothing else.
+
+A rejection deliberately leaves the form usable, so the patient can pick another
+slot and try again.
+
+Doctor Details call to action
+
+Fills the sidebar region reserved in ADR-018, using the global .btn and
+.btn--primary. A .btn--ghost variant was added next to them in styles.css for
+the confirmation's secondary action, rather than a local button style in the
+feature.
+
+Doctor Search cards were not touched: their action slot stays empty, as ADR-018
+intended.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

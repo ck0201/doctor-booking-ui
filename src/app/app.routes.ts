@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadChildren: () => import('@features/doctors/doctors.routes'),
   },
   {
+    // Appointment booking for a doctor: /book/:doctorId (ADR-019).
+    path: 'book',
+    loadChildren: () => import('@features/booking/booking.routes'),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

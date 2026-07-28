@@ -264,6 +264,12 @@ app-profile-section p {
   font-weight: 400;
 }
 
+/* Uses the global .btn; only the sidebar's own spacing lives here. */
+.book-cta {
+  width: 100%;
+  margin-top: 16px;
+}
+
 /* --- Not found: a page-level miss sits heavier than an in-page one. --- */
 
 .not-found {

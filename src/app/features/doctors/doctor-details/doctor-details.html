@@ -217,7 +217,14 @@
             </p>
           }
 
-          <!-- Action region reserved for booking. Deliberately empty in this phase. -->
+          <!-- The action region reserved in ADR-018, now filled. -->
+          <a
+            class="btn btn--primary book-cta"
+            data-testid="book-appointment"
+            [routerLink]="['/book', doctor.id]"
+          >
+            Book Appointment
+          </a>
         </div>
       </aside>
     </div>

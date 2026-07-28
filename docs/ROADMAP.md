@@ -34,21 +34,35 @@
 
 ### Appointment Booking
 
-⬜ Appointment Booking Page
+✅ Booking Domain — Models, Mock Availability, BookingService — ADR-026
 
-⬜ Doctor Availability (Mock Slots)
+✅ Appointment Booking Page — `/book/:doctorId`
 
-⬜ Date Selection
+✅ Doctor Availability (Mock Slots)
 
-⬜ Time Slot Selection
+✅ Date Selection
 
-⬜ Patient Information Form
+✅ Time Slot Selection
 
-⬜ Booking Confirmation Page
+✅ Patient Information Form
 
-⬜ Appointment Service (Mock)
+✅ Booking Confirmation — page state, not a route — ADR-027
 
-⬜ Booking Flow End-to-End
+✅ Book Appointment CTA on Doctor Details — ADR-027
+
+✅ Duplicate Submission Prevention — ADR-027
+
+✅ Booking Flow End-to-End
+
+Landing → Doctor Search → Doctor Details → Book → Confirmation.
+
+⬜ Slots stay taken once booked
+
+createBooking is stateless — see ADR-026.
+
+⬜ Book Appointment from doctor search cards
+
+Deliberately not added: the card action slot stays empty per ADR-018.
 
 ---
 

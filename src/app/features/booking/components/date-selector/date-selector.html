@@ -1,0 +1,24 @@
+<ul class="days" aria-label="Available dates">
+  @for (day of days(); track day.date) {
+    <li>
+      <button
+        class="day"
+        type="button"
+        [class.day--selected]="day.date === selectedDate()"
+        [disabled]="day.availableSlotCount === 0"
+        [attr.aria-pressed]="day.date === selectedDate()"
+        (click)="select(day)"
+      >
+        <span class="day-label">{{ day.label }}</span>
+
+        <span class="day-count">
+          @if (day.availableSlotCount === 0) {
+            Fully booked
+          } @else {
+            {{ day.availableSlotCount }} free
+          }
+        </span>
+      </button>
+    </li>
+  }
+</ul>
