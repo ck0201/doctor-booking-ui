@@ -193,6 +193,10 @@ filteredDoctors
 
 # Routing Strategy
 
+Each feature owns its routes in <feature>.routes.ts and is lazy-loaded from
+app.routes.ts (ADR-019). app.routes.ts never lists a feature's individual
+pages.
+
 /
 
 Landing

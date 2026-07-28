@@ -61,49 +61,41 @@
   </form>
 
   <div class="results">
-    @if (appliedCriteria(); as criteria) {
+    @if (appliedCriteria()) {
       <div class="results-summary">
         <span class="results-summary-label">
           {{ results().length }}
           {{ results().length === 1 ? 'doctor' : 'doctors' }}
         </span>
 
-        <span class="chip">{{ criteria.specialty?.name ?? 'All specialties' }}</span>
-
-        @if (criteria.doctorName) {
-          <span class="chip">{{ criteria.doctorName }}</span>
-        }
-
-        <span class="chip">
-          {{ criteria.city?.name ?? criteria.district?.name ?? criteria.state.name }}
-        </span>
+        <app-tag-list class="summary-tags" ariaLabel="Applied filters" [items]="summaryTags()" />
       </div>
 
       @if (results().length) {
         <!-- The page owns the grid; the card only owns itself. -->
         <div class="doctor-grid" role="list">
           @for (doctor of results(); track doctor.id) {
-            <app-doctor-card role="listitem" [doctor]="doctor" [headingLevel]="3" />
+            <app-doctor-card
+              role="listitem"
+              [doctor]="doctor"
+              [headingLevel]="3"
+              [detailsRoute]="['/doctors', doctor.id]"
+            />
           }
         </div>
       } @else {
-        <div class="empty-state">
-          <p class="empty-state-title">No doctors match this search</p>
-          <p class="empty-state-text">Try a wider area or clear the specialty filter.</p>
-        </div>
+        <app-empty-state title="No doctors match this search">
+          Try a wider area or clear the specialty filter.
+        </app-empty-state>
       }
     } @else {
-      <div class="empty-state">
-        <p class="empty-state-title">Start your search</p>
-
-        <p class="empty-state-text">
-          @if (hasFilters()) {
-            Press Search to see matching doctors.
-          } @else {
-            Pick a specialty and a location, then press Search.
-          }
-        </p>
-      </div>
+      <app-empty-state title="Start your search">
+        @if (hasFilters()) {
+          Press Search to see matching doctors.
+        } @else {
+          Pick a specialty and a location, then press Search.
+        }
+      </app-empty-state>
     }
   </div>
 </section>

@@ -16,9 +16,13 @@
 
 ✅ Search Filters in URL — ADR-021
 
-🚧 Doctor Details
+✅ Doctor Details — profile page, not-found state, breadcrumbs
 
-Profile demo page. Booking excluded.
+✅ UI Component Consolidation — ADR-024
+
+Avatar, RatingStars, ProfileSection, TagList, EmptyState
+
+Doctor cards link to /doctors/:id
 
 ---
 

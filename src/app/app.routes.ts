@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { Landing } from './features/landing/landing';
-import { Doctors } from './features/doctors/doctors';
 
 export const routes: Routes = [
   {
@@ -8,8 +7,9 @@ export const routes: Routes = [
     component: Landing,
   },
   {
+    // The doctors feature owns its own routes and loads on demand (ADR-019).
     path: 'doctors',
-    component: Doctors,
+    loadChildren: () => import('@features/doctors/doctors.routes'),
   },
   {
     path: '**',

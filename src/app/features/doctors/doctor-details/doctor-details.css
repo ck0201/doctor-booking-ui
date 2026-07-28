@@ -1,0 +1,292 @@
+.doctor-details {
+  max-width: 1200px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.page-breadcrumbs {
+  margin-bottom: 16px;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.profile-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+/*
+ * Surface for the header and the sidebar. Titled sections use the shared
+ * ProfileSection, which brings its own surface and heading.
+ */
+.card {
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.card h2 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Section content is projected, so the reset has to reach across the boundary. */
+.card p,
+app-profile-section p {
+  margin: 0;
+}
+
+.muted {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.timeline-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.plain-list,
+.timeline,
+.timings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plain-list > li + li,
+.timeline > li + li {
+  margin-top: 14px;
+}
+
+.timings {
+  margin-top: 6px;
+}
+
+/* --- Header --- */
+
+/* Surface comes from .card; this only adds the two-column layout. */
+.profile-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+}
+
+.profile-avatar {
+  --avatar-size: 88px;
+  --avatar-font-size: 26px;
+}
+
+.profile-identity {
+  min-width: 0;
+}
+
+.profile-name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.profile-specialties {
+  margin-top: 10px;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--verified {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.availability {
+  margin: 14px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.availability--today {
+  color: #15803d;
+}
+
+/* --- Practices --- */
+
+.practice-list > li + li {
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.practice-fee {
+  margin-top: 6px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* --- Reviews --- */
+
+.rating-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rating-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rating-score-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.rating-bars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rating-bar-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.rating-bar {
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-border);
+}
+
+.rating-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-warning);
+}
+
+.rating-bar-count {
+  text-align: right;
+}
+
+.review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-rating {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.review-comment {
+  margin-top: 4px;
+}
+
+.reviews > li + li {
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* --- Sidebar --- */
+
+.side-fee {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.side-fee .muted {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* --- Not found: a page-level miss sits heavier than an in-page one. --- */
+
+.not-found {
+  --empty-state-padding: 56px 24px;
+  --empty-state-title-size: 20px;
+  --empty-state-title-weight: 700;
+}
+
+@media (min-width: 1024px) {
+  .doctor-details {
+    padding: 32px 24px 72px;
+  }
+
+  .profile {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .profile-side {
+    position: sticky;
+    top: 24px;
+  }
+
+  .profile-name {
+    font-size: 28px;
+  }
+}

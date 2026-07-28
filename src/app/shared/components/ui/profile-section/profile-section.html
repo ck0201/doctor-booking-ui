@@ -1,0 +1,7 @@
+<section class="section">
+  <h2 class="section-title" [attr.aria-level]="headingLevel() === 2 ? null : headingLevel()">
+    {{ title() }}
+  </h2>
+
+  <ng-content />
+</section>

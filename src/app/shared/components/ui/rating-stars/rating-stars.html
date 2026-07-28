@@ -1,0 +1,7 @@
+<span aria-hidden="true">&#9733; {{ value() }}</span>
+
+@if (reviewCount() !== undefined) {
+  <span class="rating-count" aria-hidden="true">({{ reviewCount() }})</span>
+}
+
+<span class="sr-only">{{ label() }}</span>

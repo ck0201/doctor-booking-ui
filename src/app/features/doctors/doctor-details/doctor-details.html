@@ -1,0 +1,233 @@
+<section class="doctor-details">
+  <app-breadcrumbs class="page-breadcrumbs" [items]="breadcrumbs()" />
+
+  @if (doctor(); as doctor) {
+    <div class="profile">
+      <div class="profile-main">
+        <header class="card profile-header">
+          <app-avatar class="profile-avatar" [name]="doctor.name" [photoUrl]="doctor.photoUrl" />
+
+          <div class="profile-identity">
+            <div class="profile-name-row">
+              <h1 class="profile-name">{{ doctor.name }}</h1>
+
+              @if (doctor.isVerified) {
+                <span class="badge badge--verified">&check; Verified</span>
+              }
+            </div>
+
+            <app-tag-list
+              class="profile-specialties"
+              ariaLabel="Specialties"
+              [items]="specialtyNames()"
+            />
+
+            @if (doctor.qualifications) {
+              <p class="muted">{{ doctor.qualifications }}</p>
+            }
+
+            <ul class="stats">
+              @if (doctor.experienceYears !== undefined) {
+                <li class="stat">
+                  <span class="stat-value">{{ doctor.experienceYears }} yrs</span>
+                  <span class="stat-label">Experience</span>
+                </li>
+              }
+
+              @if (doctor.rating; as rating) {
+                <li class="stat">
+                  <app-rating-stars class="stat-value" [value]="rating.value" />
+                  <span class="stat-label">{{ rating.reviewCount }} ratings</span>
+                </li>
+              }
+
+              @if (doctor.consultationFee !== undefined) {
+                <li class="stat">
+                  <span class="stat-value">
+                    {{ doctor.consultationFee | currency: 'INR' : 'symbol' : '1.0-0' }}
+                  </span>
+                  <span class="stat-label">Consultation</span>
+                </li>
+              }
+            </ul>
+
+            @if (doctor.availability; as availability) {
+              <p class="availability" [class.availability--today]="availability.isAvailableToday">
+                @if (availability.isAvailableToday) {
+                  Available today
+                } @else if (availability.nextSlotLabel; as slot) {
+                  Next available: {{ slot }}
+                } @else {
+                  Not available today
+                }
+              </p>
+            }
+          </div>
+        </header>
+
+        <app-profile-section title="About">
+          <p>{{ doctor.about }}</p>
+        </app-profile-section>
+
+        @if (doctor.education.length) {
+          <app-profile-section title="Education">
+            <ul class="timeline">
+              @for (entry of doctor.education; track entry.degree) {
+                <li>
+                  <p class="timeline-title">{{ entry.degree }}</p>
+                  <p class="muted">{{ entry.institute }} &middot; {{ entry.year }}</p>
+                </li>
+              }
+            </ul>
+          </app-profile-section>
+        }
+
+        @if (doctor.experience.length) {
+          <app-profile-section title="Experience">
+            <ul class="timeline">
+              @for (entry of doctor.experience; track entry.role + entry.fromYear) {
+                <li>
+                  <p class="timeline-title">{{ entry.role }}</p>
+                  <p class="muted">
+                    {{ entry.organisation }} &middot;
+                    {{ periodLabel(entry.fromYear, entry.toYear) }}
+                  </p>
+                </li>
+              }
+            </ul>
+          </app-profile-section>
+        }
+
+        @if (doctor.services.length) {
+          <app-profile-section title="Services">
+            <app-tag-list variant="neutral" [items]="doctor.services" />
+          </app-profile-section>
+        }
+
+        @if (doctor.languages.length) {
+          <app-profile-section title="Languages">
+            <app-tag-list variant="neutral" [items]="doctor.languages" />
+          </app-profile-section>
+        }
+
+        @if (doctor.registrations.length) {
+          <app-profile-section title="Registrations">
+            <ul class="plain-list">
+              @for (entry of doctor.registrations; track entry.registrationNumber) {
+                <li>
+                  <span class="timeline-title">{{ entry.registrationNumber }}</span>
+                  <span class="muted"> &middot; {{ entry.council }} &middot; {{ entry.year }}</span>
+                </li>
+              }
+            </ul>
+          </app-profile-section>
+        }
+
+        <app-profile-section title="Practice Locations">
+          <ul class="plain-list practice-list">
+            @for (practice of doctor.practices; track practice.hospitalName) {
+              <li class="practice">
+                <p class="timeline-title">{{ practice.hospitalName }}</p>
+                <p class="muted">{{ practice.addressLine }} &middot; {{ practice.city.name }}</p>
+
+                <ul class="timings">
+                  @for (timing of practice.timings; track timing.days + timing.opensAt) {
+                    <li class="muted">
+                      {{ timing.days }} &middot; {{ timing.opensAt }} – {{ timing.closesAt }}
+                    </li>
+                  }
+                </ul>
+
+                @if (practice.consultationFee !== undefined) {
+                  <p class="practice-fee">
+                    {{ practice.consultationFee | currency: 'INR' : 'symbol' : '1.0-0' }}
+                    consultation
+                  </p>
+                }
+              </li>
+            }
+          </ul>
+        </app-profile-section>
+
+        <app-profile-section id="reviews" title="Patient Reviews">
+          @if (ratingRows().length) {
+            <div class="rating-summary">
+              <div class="rating-score">
+                <span class="rating-score-value">{{ doctor.rating!.value }}</span>
+                <span class="muted">{{ doctor.rating!.reviewCount }} ratings</span>
+              </div>
+
+              <ul class="rating-bars">
+                @for (row of ratingRows(); track row.star) {
+                  <li class="rating-bar-row">
+                    <span class="rating-bar-star">{{ row.star }} &#9733;</span>
+                    <span class="rating-bar" aria-hidden="true">
+                      <span class="rating-bar-fill" [style.width.%]="row.percent"></span>
+                    </span>
+                    <span class="rating-bar-count muted">{{ row.count }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (doctor.reviews.length) {
+            <ul class="plain-list reviews">
+              @for (review of doctor.reviews; track review.id) {
+                <li class="review">
+                  <div class="review-head">
+                    <span class="timeline-title">{{ review.patientName }}</span>
+                    <app-rating-stars class="review-rating" [value]="review.rating" />
+
+                    @if (review.isVerifiedVisit) {
+                      <span class="badge badge--verified">&check; Verified visit</span>
+                    }
+                  </div>
+
+                  <p class="review-comment">{{ review.comment }}</p>
+                  <p class="muted">{{ review.visitedOn | date: 'MMMM y' }}</p>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="muted">No written reviews yet.</p>
+          }
+        </app-profile-section>
+      </div>
+
+      <aside class="profile-side">
+        <div class="card side-card">
+          <h2 class="side-title">{{ doctor.practices[0].hospitalName }}</h2>
+          <p class="muted">
+            {{ doctor.practices[0].addressLine }} &middot; {{ doctor.practices[0].city.name }}
+          </p>
+
+          <ul class="timings">
+            @for (timing of doctor.practices[0].timings; track timing.days + timing.opensAt) {
+              <li class="muted">
+                {{ timing.days }} &middot; {{ timing.opensAt }} – {{ timing.closesAt }}
+              </li>
+            }
+          </ul>
+
+          @if (doctor.consultationFee !== undefined) {
+            <p class="side-fee">
+              {{ doctor.consultationFee | currency: 'INR' : 'symbol' : '1.0-0' }}
+              <span class="muted">consultation</span>
+            </p>
+          }
+
+          <!-- Action region reserved for booking. Deliberately empty in this phase. -->
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <app-empty-state class="not-found" data-testid="not-found" title="Doctor not found">
+      We could not find a doctor for
+      <strong data-testid="requested-id">{{ id() }}</strong
+      >. The profile may have been removed, or the link may be incorrect.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/doctors">Back to doctor search</a>
+    </app-empty-state>
+  }
+</section>

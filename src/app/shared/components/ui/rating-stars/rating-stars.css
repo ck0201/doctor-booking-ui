@@ -1,0 +1,12 @@
+:host {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  /* Colour and weight come from the consumer. */
+  color: inherit;
+}
+
+.rating-count {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}

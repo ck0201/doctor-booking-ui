@@ -1,0 +1,37 @@
+:host {
+  --empty-state-padding: 48px 24px;
+  --empty-state-title-size: 15px;
+  --empty-state-title-weight: 600;
+
+  display: block;
+}
+
+.empty-state {
+  padding: var(--empty-state-padding);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  text-align: center;
+}
+
+.empty-state-title {
+  margin: 0 0 6px;
+  font-size: var(--empty-state-title-size);
+  font-weight: var(--empty-state-title-weight);
+  color: var(--color-text);
+}
+
+.empty-state-body {
+  max-width: 460px;
+  margin: 0 auto;
+  color: var(--color-text-secondary);
+}
+
+/* Collapses when the caller projects no actions. */
+.empty-state-actions:empty {
+  display: none;
+}
+
+.empty-state-actions:not(:empty) {
+  margin-top: 20px;
+}

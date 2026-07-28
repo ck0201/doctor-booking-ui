@@ -276,6 +276,54 @@ page. The details page (Phase 3) flips the default on.
 
 ---
 
+## ADR-019
+
+Decision
+
+The doctors feature owns its routes in doctors.routes.ts and is lazy-loaded as
+one chunk. Its pages live in sibling folders:
+
+features/doctors/doctors.routes.ts
+
+features/doctors/doctor-search/
+
+features/doctors/doctor-details/
+
+app.routes.ts holds only:
+
+{ path: 'doctors', loadChildren: () => import('@features/doctors/doctors.routes') }
+
+Reason
+
+Two pages under one feature made the flat layout ambiguous — `Doctors` no
+longer says which page it is. Splitting before the profile UI exists means the
+rename touches one route entry and one spec instead of a finished feature.
+
+Route ownership follows the same rule as the rest of the codebase: the feature
+that owns the pages owns their configuration. app.routes.ts no longer has to
+know that doctors has two pages, or gain a third entry when doctor availability
+arrives.
+
+Lazy loading is what ARCHITECTURE.md asks for where appropriate, and it is
+appropriate here: the landing page has no use for the search panel or the
+profile page. Measured effect — initial bundle 282.11 kB to 240.93 kB
+(66.89 kB transferred), with the feature in a 43.20 kB on-demand chunk.
+
+Consequences
+
+Doctors renamed to DoctorSearch, selector app-doctors to app-doctor-search.
+
+doctors.routes.ts uses a default export, which is what loadChildren consumes.
+
+Titles are set per route. A resolver-based title carrying the doctor's name
+comes with the profile page.
+
+Both specs route through the real doctors.routes.ts rather than a hand-rolled
+route table, so the relative navigation in DoctorSearch.search() is exercised
+in the nested shape production uses.
+
+---
+
 ## ADR-020
 
 Decision
@@ -330,11 +378,6 @@ needs no doctorId field it would not have in an API response. rating.
 reviewCount counts everyone who rated; reviews holds only the written subset,
 so reviews.length is deliberately smaller.
 
-Note
-
-ADR-019 is reserved for the doctors route group and feature folder split,
-recorded when Step 3 lands.
-
 ---
 
 ## ADR-021
@@ -377,5 +420,126 @@ instead of injecting ActivatedRoute. Doctor Details will read :id the same way.
 Consequence
 
 `lastSearch` became `appliedCriteria` and is now computed, not written.
+
+---
+
+## ADR-022
+
+Decision
+
+Profile sections are content inside the page template, not a component each.
+A section becomes a component only when it carries its own conditional logic,
+stateful iteration, or exceeds roughly forty lines of template.
+
+Reason
+
+About, Education, Experience, Registrations, Services and Languages are each a
+heading and a list. Six wrapper components would be six files, six specs and
+six indirections for no reuse.
+
+Status
+
+Settled. Sections are markup inside the shared ProfileSection, and the
+duplication this ADR flagged has been removed — see ADR-024.
+
+---
+
+## ADR-023
+
+Decision
+
+An invalid or unknown doctor id renders a not-found state in place. The URL is
+preserved and no redirect happens.
+
+Reason
+
+The wildcard route would send /doctors/9999 to the landing page, which reads as
+a broken application. Keeping the URL lets the user see what they asked for,
+share the broken link with someone who can fix it, and back out deliberately.
+
+Implementation details
+
+One not-found path, not two. `toRouteId` returns null for anything that is not
+a positive integer, and `getById` returns undefined for an id nobody has, so
+both collapse into `doctor() === undefined`. The template branches once.
+
+Validation lives in @core/utils/route-params.ts and is shared with the search
+page rather than duplicated. It tightened in the process: the previous check
+used Number(), which accepted '1e3' as 1000 and '0x10' as 16. It is now a digit
+pattern, so '1e3', '0x10', '1.5', '-1' and '0' are all rejected.
+
+The id stays a string on the component input, because that is what the router
+hands over. Parsing is a computed, so an id that changes mid-session
+re-validates with everything else.
+
+The route title resolves through the same path: the doctor's name and specialty
+when found, 'Doctor not found' otherwise. A browser tab should not claim a
+doctor exists when the page says otherwise.
+
+No guard and no resolver for the doctor itself. A guard would have to redirect,
+which is the behaviour this ADR rejects, and a resolver would move the lookup
+away from the component that already derives everything else from the id.
+
+---
+
+## ADR-024
+
+Decision
+
+Five presentational components extracted to shared/components/ui:
+
+Avatar, RatingStars, ProfileSection, TagList, EmptyState
+
+DoctorCard, DoctorDetails and DoctorSearch all consume them. Doctor cards now
+link to /doctors/:id.
+
+Reason
+
+Each had two or three copies of the same markup and CSS across the card, the
+profile and the search results. The initials derivation existed twice, and the
+screen-reader sentence for a rating existed twice with different wording.
+
+Sizing and density are CSS custom properties, not inputs
+
+--avatar-size, --avatar-font-size, --tag-gap, --empty-state-padding,
+--empty-state-title-size, --empty-state-title-weight
+
+A `size="md"` input cannot follow a media query, and the card's avatar is 72px
+on desktop and 56px on mobile. Properties also let the two existing empty
+states keep the densities they already had instead of forcing a visual change
+into a refactor that was supposed to have none.
+
+RatingStars owns the glyph, the optional count and the accessible sentence, but
+inherits colour and weight. The same rating reads amber in a card's meta row and
+plain text in a profile stat; that belongs to the consumer.
+
+EmptyState projects its message rather than taking a string input, because
+callers need markup inside it — the id that was not found. It still owns the
+paragraph, so it keeps control of the typography.
+
+Consequences
+
+DoctorCard lost its `initials` and `ratingLabel` members; DoctorDetails lost
+`initials` and `ratingLabel` and gained `specialtyNames`.
+
+One wording had to win in the shared screen-reader sentence: "N out of 5 from N
+ratings". The card previously said "reviews", which was wrong — the count
+includes people who rated without writing anything.
+
+`.btn` moved to styles.css during the same pass, since both feature stylesheets
+had a copy and doctor-details.css was over its 4 kB budget.
+
+Two paragraph resets now cross a projection boundary
+(`app-profile-section p`), because projected content keeps the parent's style
+scope. Worth knowing before moving those rules.
+
+Not consolidated
+
+The rating distribution bars stay local to DoctorDetails. The design called
+that RatingSummary and it was not in this phase's scope; hospital reviews will
+be the second consumer that justifies it.
+
+DoctorDetails keeps a local `.card` for the profile header and the sidebar,
+which are surfaces without a section title.
 
 Future architectural decisions should be recorded here before implementation.

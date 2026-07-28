@@ -1,0 +1,31 @@
+:host {
+  --tag-gap: 6px;
+
+  display: block;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tag-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  padding: 4px 10px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tag--neutral {
+  border-color: var(--color-border);
+  background: #f8fafc;
+  color: var(--color-text);
+  font-weight: 500;
+}

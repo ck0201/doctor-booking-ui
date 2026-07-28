@@ -2,6 +2,8 @@ import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DoctorCardData, DoctorCardField } from '@core/models/doctor.model';
+import { Avatar } from '../avatar/avatar';
+import { RatingStars } from '../rating-stars/rating-stars';
 
 let nextCardId = 0;
 
@@ -37,7 +39,7 @@ type FieldVisibility = Record<DoctorCardField, boolean>;
  */
 @Component({
   selector: 'app-doctor-card',
-  imports: [RouterLink, CurrencyPipe],
+  imports: [RouterLink, CurrencyPipe, Avatar, RatingStars],
   templateUrl: './doctor-card.html',
   styleUrl: './doctor-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -95,22 +97,5 @@ export class DoctorCard {
       visibility[field] = hasData[field] && !omitted.has(field);
     }
     return visibility;
-  });
-
-  /** Avatar fallback: 'Dr. Asha Verma' -> 'AV'. */
-  protected readonly initials = computed(() => {
-    const words = this.doctor()
-      .name.replace(/^dr\.?\s+/i, '')
-      .split(/\s+/)
-      .filter(Boolean);
-
-    const first = words[0]?.charAt(0) ?? '';
-    const last = words.length > 1 ? words[words.length - 1].charAt(0) : '';
-    return (first + last).toUpperCase();
-  });
-
-  protected readonly ratingLabel = computed(() => {
-    const rating = this.doctor().rating;
-    return rating ? `${rating.value} out of 5 from ${rating.reviewCount} reviews` : '';
   });
 }

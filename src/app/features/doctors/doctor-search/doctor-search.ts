@@ -9,20 +9,14 @@ import {
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { SearchableDropdown } from '@shared/components/forms/searchable-dropdown/searchable-dropdown';
 import { DoctorCard } from '@shared/components/ui/doctor-card/doctor-card';
+import { EmptyState } from '@shared/components/ui/empty-state/empty-state';
+import { TagList } from '@shared/components/ui/tag-list/tag-list';
 import { LocationService } from '@core/services/location.service';
 import { SpecialtyService } from '@core/services/specialty.service';
 import { DoctorService } from '@core/services/doctor.service';
 import { City } from '@core/models/location.model';
 import { DoctorSearchCriteria } from '@core/models/doctor-search-criteria.model';
-
-/** Query parameters arrive as strings; anything that is not a positive integer id is ignored. */
-function toId(value: string | undefined): number | null {
-  if (!value?.trim()) {
-    return null;
-  }
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0 ? id : null;
-}
+import { toRouteId } from '@core/utils/route-params';
 
 /** Source of the city cascade: the district's cities, plus whatever the URL asks for. */
 interface CitySource {
@@ -42,13 +36,13 @@ interface CitySource {
  * every keystroke; they re-sync whenever the URL changes.
  */
 @Component({
-  selector: 'app-doctors',
-  imports: [SearchableDropdown, DoctorCard],
-  templateUrl: './doctors.html',
-  styleUrl: './doctors.css',
+  selector: 'app-doctor-search',
+  imports: [SearchableDropdown, DoctorCard, EmptyState, TagList],
+  templateUrl: './doctor-search.html',
+  styleUrl: './doctor-search.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Doctors {
+export class DoctorSearch {
   private readonly locationService = inject(LocationService);
   private readonly specialtyService = inject(SpecialtyService);
   private readonly doctorService = inject(DoctorService);
@@ -72,18 +66,18 @@ export class Doctors {
   readonly searchedParam = input<string | undefined>(undefined, { alias: 'searched' });
 
   private readonly specialtyFromUrl = computed(() => {
-    const id = toId(this.specialtyParam());
+    const id = toRouteId(this.specialtyParam());
     return this.specialties.find((specialty) => specialty.id === id) ?? null;
   });
 
   private readonly districtFromUrl = computed(() => {
-    const id = toId(this.districtParam());
+    const id = toRouteId(this.districtParam());
     return this.districts.find((district) => district.id === id) ?? null;
   });
 
   /** A city in the URL is honoured only when it belongs to the district in the URL. */
   private readonly cityFromUrl = computed(() => {
-    const id = toId(this.cityParam());
+    const id = toRouteId(this.cityParam());
     return this.districtFromUrl()?.cities.find((city) => city.id === id) ?? null;
   });
 
@@ -142,6 +136,22 @@ export class Doctors {
   readonly results = computed(() => {
     const criteria = this.appliedCriteria();
     return criteria ? this.doctorService.search(criteria) : [];
+  });
+
+  /** The submitted search, restated as labels above the results. */
+  readonly summaryTags = computed<readonly string[]>(() => {
+    const criteria = this.appliedCriteria();
+    if (!criteria) {
+      return [];
+    }
+
+    const tags = [criteria.specialty?.name ?? 'All specialties'];
+    if (criteria.doctorName) {
+      tags.push(criteria.doctorName);
+    }
+    tags.push(criteria.city?.name ?? criteria.district?.name ?? criteria.state.name);
+
+    return tags;
   });
 
   /** Live panel state, used only to word the prompt. */

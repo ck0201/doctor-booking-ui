@@ -1,12 +1,6 @@
 <article class="card" [attr.aria-labelledby]="nameId">
   @if (shows().photo) {
-    <div class="card-avatar" aria-hidden="true">
-      @if (doctor().photoUrl; as photoUrl) {
-        <img class="card-avatar-image" [src]="photoUrl" alt="" />
-      } @else {
-        <span class="card-avatar-initials">{{ initials() }}</span>
-      }
-    </div>
+    <app-avatar class="card-avatar" [name]="doctor().name" [photoUrl]="doctor().photoUrl" />
   }
 
   <div class="card-body">
@@ -45,11 +39,10 @@
 
       @if (shows().rating) {
         <li class="card-meta-item card-rating">
-          <span aria-hidden="true">&#9733; {{ doctor().rating!.value }}</span>
-          <span class="card-review-count" aria-hidden="true">
-            ({{ doctor().rating!.reviewCount }})
-          </span>
-          <span class="sr-only">{{ ratingLabel() }}</span>
+          <app-rating-stars
+            [value]="doctor().rating!.value"
+            [reviewCount]="doctor().rating!.reviewCount"
+          />
         </li>
       }
 

@@ -120,16 +120,16 @@ describe('DoctorCard', () => {
   });
 
   it('falls back to initials when there is no photo', () => {
-    expect(query('.card-avatar-initials').textContent?.trim()).toBe('AV');
-    expect(query('.card-avatar-image')).toBeNull();
+    expect(query('.avatar-initials').textContent?.trim()).toBe('AV');
+    expect(query('.avatar-image')).toBeNull();
   });
 
   it('renders the photo when one is supplied', () => {
     host.doctor.set({ ...FULL_DOCTOR, photoUrl: '/doctors/asha.jpg' });
     fixture.detectChanges();
 
-    expect(query('.card-avatar-image')).toBeTruthy();
-    expect(query('.card-avatar-initials')).toBeNull();
+    expect(query('.avatar-image')).toBeTruthy();
+    expect(query('.avatar-initials')).toBeNull();
   });
 
   it('exposes the name as a heading of the requested level', () => {

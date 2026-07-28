@@ -1,0 +1,5 @@
+<ul class="tags" [attr.aria-label]="ariaLabel()">
+  @for (item of items(); track item) {
+    <li class="tag" [class.tag--neutral]="variant() === 'neutral'">{{ item }}</li>
+  }
+</ul>
