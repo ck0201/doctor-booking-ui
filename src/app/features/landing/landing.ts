@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { Navbar } from '@shared/components/layout/navbar/navbar';
 import { RouterLink } from '@angular/router';
 
+// The navbar is rendered once by the application shell, not per page.
 @Component({
   selector: 'app-landing',
-  imports: [Navbar, RouterLink],
+  imports: [RouterLink],
   templateUrl: './landing.html',
   styleUrl: './landing.css',
 })

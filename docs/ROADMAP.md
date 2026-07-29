@@ -107,6 +107,8 @@ ADR-026.
 
 ⬜ Patient Dashboard
 
+✅ Navigation Shell — navbar enabled in the app shell — ADR-030
+
 ✅ Doctor Dashboard — read-only at `/doctor/dashboard` — ADR-029
 
 Availability toggle is local and unsaved. Not wired to the booking flow.
@@ -149,5 +151,6 @@ Raised during earlier phases, not yet scheduled.
 - Doctor Card Featured Mode (ADR-017)
 - Doctor Card Skeleton (when async data is introduced)
 - Scroll Position Restoration for Doctor Details
-- Navbar on Every Page (or remove from UI_GUIDELINES)
+- Sticky navbar (needs the Doctor Details and Booking sidebars raised first)
+- Page min-height vs navbar height (see ADR-030)
 - ESLint

@@ -842,6 +842,54 @@ availability state. It is a plausible shared component, but promoting it means
 editing AppointmentCard and its assertions, which is a finished feature. Left
 alone; worth doing as its own change if a fourth appears.
 
+---
+
+## ADR-030
+
+Decision
+
+The navbar is rendered once by the application shell (app.html) and enabled with
+four links: Home, Doctors, My Appointments, Doctor Dashboard.
+
+Reason
+
+Every feature was reachable only by typing a URL. The navbar existed but had
+never been switched on: it was commented out in landing.html, its stylesheet was
+empty, and its links were all href="#".
+
+In the shell rather than per page, so no feature renders its own copy and there is
+one place to change. This also settles the open question carried in the roadmap
+since Phase 1.
+
+What the navbar knows
+
+Routes and labels, in one array. No services, no feature imports, no state.
+Active highlighting is RouterLinkActive with ariaCurrentWhenActive, not custom
+logic. Home matches exactly, or '/' would look active everywhere; the others
+match by prefix, so a doctor profile keeps Doctors highlighted.
+
+Removals
+
+Specialties, About, Login and Register were dead href="#" links to routes that do
+not exist, and Login is an explicit non-goal. The Book Appointment button was
+also removed: booking needs a doctor, so a global button could never work.
+
+Not sticky
+
+Doctor Details and Appointment Booking both have sticky sidebars at top: 24px. A
+bar pinned to the top of the viewport would sit over them, so the navbar scrolls
+with the page. Making it sticky is a fine follow-up, but it needs those two
+sidebars raised first — which is a change to finished features.
+
+Consequence
+
+Pages set min-height: 100vh, so the navbar's height now makes every page
+marginally taller than the viewport. Left alone rather than editing five finished
+stylesheets; the fix is min-height: calc(100vh - <navbar height>) per page.
+
+Also fixes the NG8113 warning the build has carried since Phase 1: Landing
+imported Navbar without using it. The build is now warning-free.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

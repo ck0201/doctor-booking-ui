@@ -1,16 +1,21 @@
-<nav>
-  <div class="logo">
+<nav class="navbar" aria-label="Main">
+  <div class="brand">
     <h2>DocBook</h2>
   </div>
 
-  <ul>
-    <li><a href="#">Home</a></li>
-    <li><a href="#">Find Doctors</a></li>
-    <li><a href="#">Specialties</a></li>
-    <li><a href="#">About</a></li>
-    <li><a href="#">Login</a></li>
-    <li><a href="#">Register</a></li>
+  <ul class="links">
+    @for (link of links; track link.route) {
+      <li>
+        <a
+          class="link"
+          routerLinkActive="link--active"
+          ariaCurrentWhenActive="page"
+          [routerLink]="link.route"
+          [routerLinkActiveOptions]="{ exact: link.exact }"
+        >
+          {{ link.label }}
+        </a>
+      </li>
+    }
   </ul>
-
-  <button>Book Appointment</button>
 </nav>
