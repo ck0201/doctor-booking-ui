@@ -86,7 +86,10 @@ Deliberately not added: the card action slot stays empty per ADR-018.
 
 ### Patient Experience
 
-⬜ My Appointments
+✅ My Appointments — read-only history at `/appointments` — ADR-028
+
+Bookings made in the session do not appear: the service is stateless by
+ADR-026.
 
 ⬜ Appointment Details
 

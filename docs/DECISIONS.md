@@ -707,6 +707,73 @@ feature.
 Doctor Search cards were not touched: their action slot stays empty, as ADR-018
 intended.
 
+---
+
+## ADR-028
+
+Decision
+
+Appointment history is its own feature at features/appointments, lazy-loaded at
+/appointments. Its data comes from BookingService.getAppointmentHistory(), which
+reads a mock and stays read-only.
+
+Reason
+
+A separate route and a separate job — a list to look back at, not a wizard to
+walk through — so it is a separate feature. It shares the booking domain the way
+doctor-details and booking already share DoctorService: through core, not through
+each other.
+
+ADR-026 holds unchanged. createBooking still writes nothing, and the history is
+what a backend would return rather than a record of this session. A booking made
+now does not appear in the list. That is a visible limitation and it is
+deliberate; persistence was out of scope.
+
+Model
+
+One appointment model, composed rather than restated: Appointment holds a
+DoctorCardData and an AppointmentTime. Nothing about a doctor is copied, so a
+name or specialty cannot drift from the doctor module.
+
+AppointmentTime was extracted from BookingSlot, which now extends it. Purely
+additive — BookingSlot's shape is unchanged and every existing use compiles. It
+exists so a past appointment does not carry an isAvailable flag that means
+nothing for it.
+
+AppointmentStatus is separate from BookingStatus on purpose: one is where an
+appointment stands, the other is whether a single request was accepted.
+
+Sorting
+
+In @core/utils/appointment-order.ts, applied by the service, never in a template.
+Groups by status — upcoming, completed, cancelled — then newest date first inside
+each group, with the reference as a final tie-break so the order is stable rather
+than dependent on the order the mock declares.
+
+"Newest first" is applied uniformly, including to upcoming. For a history that
+reads correctly, but soonest-first may be what a patient actually wants for
+upcoming appointments; it is a single comparator line to flip.
+
+Filtering
+
+A local signal, not a query parameter. Doctor search puts filters in the URL
+(ADR-021) because a search is worth sharing and worth surviving a refresh; a
+glance at your own history is neither.
+
+Formatting
+
+formatTimeRange was added to booking-slots and BookingConfirmation now uses it
+too, so the confirmation and the history cannot word the same appointment
+differently. SLOT_DURATION_MINUTES moved to the same util for the same reason.
+
+Components
+
+Both new components stay in the feature: AppointmentCard and
+AppointmentStatusFilter each have exactly one consumer. Nothing was promoted to
+shared. DoctorCard was considered for the list rows and rejected — it brings its
+own card surface, heading and stretched link, so nesting it would double the card
+chrome and it has no room for a reference, a date or a status.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

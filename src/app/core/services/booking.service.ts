@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
+  Appointment,
   BookingAvailability,
   BookingRequest,
   BookingResponse,
   BookingSlot,
 } from '../models/booking.model';
+import { sortAppointments } from '@core/utils/appointment-order';
 import { isPatientInfoValid } from '@core/utils/booking-validation';
+import { APPOINTMENT_HISTORY } from '@mock-data/appointments.mock';
 import { BOOKING_AVAILABILITY } from '@mock-data/booking-availability.mock';
 import { DATA_AS_OF_YEAR } from '@mock-data/doctors.mock';
 
@@ -63,6 +66,19 @@ export class BookingService {
       reference: this.buildReference(),
       slot,
     };
+  }
+
+  /**
+   * The patient's appointment history, ready to render.
+   *
+   * Read-only and stateless: this is what a backend would return, not a record
+   * of bookings made in this session. createBooking still writes nothing, so
+   * ADR-026 holds.
+   *
+   * Sorted here rather than in the page, so every consumer gets the same order.
+   */
+  getAppointmentHistory(): readonly Appointment[] {
+    return sortAppointments(APPOINTMENT_HISTORY);
   }
 
   /** Sequential, so tests and demos read predictably. */

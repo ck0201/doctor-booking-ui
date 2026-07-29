@@ -1,0 +1,41 @@
+<section class="history-page">
+  <header class="page-header">
+    <h1>My Appointments</h1>
+
+    <p class="count" data-testid="appointment-count">
+      @if (hasAnyAppointments()) {
+        {{ visibleAppointments().length }}
+        {{ visibleAppointments().length === 1 ? 'appointment' : 'appointments' }}
+        @if (filter() !== 'all') {
+          of {{ appointments.length }}
+        }
+      } @else {
+        No appointments yet
+      }
+    </p>
+  </header>
+
+  @if (hasAnyAppointments()) {
+    <app-appointment-status-filter class="filters" [counts]="counts()" [(selected)]="filter" />
+
+    @if (isFilteredEmpty()) {
+      <app-empty-state data-testid="filter-empty" title="Nothing in this list">
+        You have no {{ filter() }} appointments. Try another filter.
+      </app-empty-state>
+    } @else {
+      <ul class="list" data-testid="appointment-list">
+        @for (appointment of visibleAppointments(); track appointment.reference) {
+          <li>
+            <app-appointment-card [appointment]="appointment" [headingLevel]="2" />
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    <app-empty-state data-testid="history-empty" title="No appointments yet">
+      When you book an appointment it will appear here, with its reference and timing.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/doctors">Find a doctor</a>
+    </app-empty-state>
+  }
+</section>

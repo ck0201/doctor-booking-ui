@@ -4,6 +4,7 @@ import { BookingService } from './booking.service';
 import { DoctorService } from './doctor.service';
 import { PatientInfo } from '../models/booking.model';
 import { EMPTY_PATIENT_INFO } from '@core/utils/booking-validation';
+import { sortAppointments } from '@core/utils/appointment-order';
 import { weekdayOf } from '@core/utils/booking-slots';
 import { BOOKING_WINDOW_DAYS, BOOKING_WINDOW_START } from '@mock-data/booking-availability.mock';
 
@@ -196,6 +197,60 @@ describe('BookingService', () => {
       service.createBooking({ doctorId: 1, slotId: slot.id, patient: VALID_PATIENT });
 
       expect(service.findSlot(1, slot.id)?.isAvailable).toBe(true);
+    });
+  });
+
+  describe('getAppointmentHistory', () => {
+    it('returns the mock history', () => {
+      expect(service.getAppointmentHistory().length).toBeGreaterThan(0);
+    });
+
+    it('returns it already sorted, so no caller has to', () => {
+      const history = service.getAppointmentHistory();
+
+      expect(history).toEqual(sortAppointments(history));
+    });
+
+    it('covers all three statuses, so the filters all have something', () => {
+      const statuses = new Set(service.getAppointmentHistory().map((item) => item.status));
+
+      expect(statuses).toEqual(new Set(['upcoming', 'completed', 'cancelled']));
+    });
+
+    it('gives every appointment a unique reference', () => {
+      const references = service.getAppointmentHistory().map((item) => item.reference);
+
+      expect(new Set(references).size).toBe(references.length);
+    });
+
+    it('names only real doctors, resolved from the doctor module', () => {
+      for (const appointment of service.getAppointmentHistory()) {
+        expect(appointment.doctor).toBe(doctors.getById(appointment.doctor.id));
+      }
+    });
+
+    it('gives every appointment a formatted date and time', () => {
+      for (const appointment of service.getAppointmentHistory()) {
+        expect(appointment.time.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(appointment.time.startsAt).toMatch(/^\d{2}:\d{2} (AM|PM)$/);
+        expect(appointment.time.endsAt).toMatch(/^\d{2}:\d{2} (AM|PM)$/);
+      }
+    });
+
+    it('is read only: booking something does not add to it', () => {
+      const before = service.getAppointmentHistory().length;
+
+      service.createBooking({
+        doctorId: 1,
+        slotId: firstFreeSlotFor(1).id,
+        patient: VALID_PATIENT,
+      });
+
+      expect(service.getAppointmentHistory().length).toBe(before);
+    });
+
+    it('hands back the same list every time, since nothing mutates it', () => {
+      expect(service.getAppointmentHistory()).toEqual(service.getAppointmentHistory());
     });
   });
 

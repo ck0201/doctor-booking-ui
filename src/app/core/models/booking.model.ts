@@ -1,3 +1,5 @@
+import { DoctorCardData } from './doctor.model';
+
 /**
  * Appointment booking domain.
  *
@@ -8,14 +10,22 @@
  * mock data.
  */
 
-export interface BookingSlot {
-  /** Stable id, e.g. '1-2026-08-10-1000'. Unique across doctors and days. */
-  readonly id: string;
+/**
+ * When an appointment is. The narrowest shape both a bookable slot and a
+ * historical record share, so a past appointment carries no availability flag it
+ * has no use for.
+ */
+export interface AppointmentTime {
   /** ISO date, 'YYYY-MM-DD'. */
   readonly date: string;
   /** Display time, e.g. '10:00 AM'. */
   readonly startsAt: string;
   readonly endsAt: string;
+}
+
+export interface BookingSlot extends AppointmentTime {
+  /** Stable id, e.g. '1-2026-08-10-1000'. Unique across doctors and days. */
+  readonly id: string;
   /** False when somebody already holds this slot. */
   readonly isAvailable: boolean;
 }
@@ -72,3 +82,29 @@ export interface PatientInfoErrors {
   readonly age: string | null;
   readonly gender: string | null;
 }
+
+// --- Appointment history (read-only) ---
+
+/**
+ * Where an appointment stands. Distinct from BookingStatus, which is the outcome
+ * of a single booking request, not the life of the appointment it created.
+ */
+export type AppointmentStatus = 'upcoming' | 'completed' | 'cancelled';
+
+/**
+ * A booked appointment as the patient's history shows it.
+ *
+ * Composed from what already exists — DoctorCardData for who, AppointmentTime
+ * for when — so nothing about a doctor is restated here and there is only one
+ * appointment model in the app.
+ */
+export interface Appointment {
+  /** As issued by BookingService, e.g. 'APT-2026-0004'. */
+  readonly reference: string;
+  readonly doctor: DoctorCardData;
+  readonly time: AppointmentTime;
+  readonly status: AppointmentStatus;
+}
+
+/** The history page's filter, which is a status plus "no filter". */
+export type AppointmentFilter = 'all' | AppointmentStatus;

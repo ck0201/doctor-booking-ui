@@ -1,0 +1,15 @@
+<div class="filters" role="group" aria-label="Filter appointments by status">
+  @for (filter of filters; track filter) {
+    <button
+      class="filter"
+      type="button"
+      [class.filter--selected]="filter === selected()"
+      [attr.aria-pressed]="filter === selected()"
+      [attr.data-testid]="'filter-' + filter"
+      (click)="selected.set(filter)"
+    >
+      {{ labels[filter] }}
+      <span class="count">{{ counts()[filter] }}</span>
+    </button>
+  }
+</div>

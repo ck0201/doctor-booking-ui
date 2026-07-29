@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { BookingSlot, PatientInfo } from '@core/models/booking.model';
 import { DoctorCardData } from '@core/models/doctor.model';
-import { formatFullDayLabel } from '@core/utils/booking-slots';
+import { formatFullDayLabel, formatTimeRange } from '@core/utils/booking-slots';
 import { EmptyState } from '@shared/components/ui/empty-state/empty-state';
 import { ProfileSection } from '@shared/components/ui/profile-section/profile-section';
 
@@ -31,6 +31,6 @@ export class BookingConfirmation {
   /** 'Mon 10 Aug 2026' */
   protected readonly dateLabel = computed(() => formatFullDayLabel(this.slot().date));
 
-  /** '10:00 AM – 10:15 AM' */
-  protected readonly timeLabel = computed(() => `${this.slot().startsAt} – ${this.slot().endsAt}`);
+  /** '10:00 AM – 10:15 AM'. Shared with appointment history, so both read alike. */
+  protected readonly timeLabel = computed(() => formatTimeRange(this.slot()));
 }

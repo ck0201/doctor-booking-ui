@@ -1,0 +1,45 @@
+<article class="card">
+  <div class="head">
+    <div class="identity">
+      <!--
+        role="heading" with aria-level: the rank is an input, and Angular cannot
+        template a dynamic tag name without duplicating the markup (as DoctorCard).
+      -->
+      <span class="doctor" role="heading" [attr.aria-level]="headingLevel()">
+        {{ appointment().doctor.name }}
+      </span>
+
+      <p class="specialty">{{ appointment().doctor.primarySpecialty.name }}</p>
+    </div>
+
+    <span class="status" [class]="'status--' + appointment().status" data-testid="status">
+      {{ statusLabel() }}
+    </span>
+  </div>
+
+  <dl class="facts">
+    <div class="fact">
+      <dt>Reference</dt>
+      <dd data-testid="reference">{{ appointment().reference }}</dd>
+    </div>
+
+    <div class="fact">
+      <dt>Date</dt>
+      <dd data-testid="date">{{ dateLabel() }}</dd>
+    </div>
+
+    <div class="fact">
+      <dt>Time</dt>
+      <dd data-testid="time">{{ timeLabel() }}</dd>
+    </div>
+
+    @if (appointment().doctor.practice; as practice) {
+      <div class="fact fact--wide">
+        <dt>Where</dt>
+        <dd data-testid="practice">
+          {{ practice.hospitalName }} <span class="muted">· {{ practice.city.name }}</span>
+        </dd>
+      </div>
+    }
+  </dl>
+</article>

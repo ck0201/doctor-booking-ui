@@ -1,0 +1,95 @@
+:host {
+  display: block;
+}
+
+.card {
+  padding: 18px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.identity {
+  min-width: 0;
+}
+
+.doctor {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.specialty {
+  margin: 2px 0 0;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status--upcoming {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+}
+
+.status--completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status--cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px 20px;
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.fact dt {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.fact dd {
+  margin: 2px 0 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+@media (min-width: 640px) {
+  .facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fact--wide {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,4 +1,8 @@
+import { AppointmentTime } from '@core/models/booking.model';
 import { WEEKDAYS, Weekday } from '@core/models/hospital.model';
+
+/** How long one appointment slot runs. */
+export const SLOT_DURATION_MINUTES = 15;
 
 /**
  * Calendar helpers for booking slots.
@@ -78,6 +82,11 @@ export function formatTimeOfDay(hour: number, minute: number): string {
 /** '1000' for 10:00, used to build slot ids. */
 export function timeKey(hour: number, minute: number): string {
   return `${`${hour}`.padStart(2, '0')}${`${minute}`.padStart(2, '0')}`;
+}
+
+/** '10:00 AM – 10:15 AM'. One definition, used by the confirmation and the history. */
+export function formatTimeRange(time: AppointmentTime): string {
+  return `${time.startsAt} – ${time.endsAt}`;
 }
 
 export function addMinutes(
