@@ -890,6 +890,67 @@ stylesheets; the fix is min-height: calc(100vh - <navbar height>) per page.
 Also fixes the NG8113 warning the build has carried since Phase 1: Landing
 imported Navbar without using it. The build is now warning-free.
 
+---
+
+## ADR-031
+
+Decision
+
+Hospital search is a new feature at features/hospitals, lazy-loaded at
+/hospitals. It reuses the existing hospital domain untouched and adds one method
+to HospitalService: searchByText(query).
+
+Reason
+
+The existing search(criteria) narrows by several structured filters at once,
+which is an AND. A single box asking "does this word appear in the name, the city
+or a department" is an OR. Layering either on the other would obscure both, so
+they sit side by side. Filtering stays in the service; the page only holds the
+query.
+
+Note that search(criteria) now has no consumer. It is fully tested and is the
+seam a structured filter panel would use, so it stays.
+
+URL synchronisation
+
+Follows ADR-021 — the query is in the URL, so a search survives a refresh and can
+be shared — with one difference from doctor search: results update as you type
+rather than on submit.
+
+That difference forces two choices. The URL is written with replaceUrl, because
+typing is not navigation history and a five-letter word should not cost five back
+presses. And the box is bound to a local signal seeded from the parameter rather
+than to the parameter directly: rebinding a text input to an awaited navigation
+drops characters when someone types quickly.
+
+No debounce. Filtering twelve records in memory is immediate, and a debounce
+would add a delay with nothing to hide behind it. It becomes worth adding when
+the query reaches an API.
+
+Components
+
+HospitalCard is feature-local. Hospital Details is a non-goal this phase, so the
+search page is its only consumer, and this phase's rule was to promote nothing
+without two. shared/components/ui/README.md previously listed hospital-card as a
+future resident; that expectation is now recorded as conditional on Hospital
+Details arriving.
+
+Reused rather than rebuilt: Avatar for the logo, RatingStars for the rating,
+TagList for the departments, EmptyState for no matches. Nothing new was added to
+shared.
+
+View Details
+
+Disabled while /hospitals/:id does not exist, rather than linking to a route that
+would bounce off the wildcard — the same call ADR-018 made for DoctorCard's
+detailsRoute. The input is already there for Hospital Details to fill.
+
+Landing page
+
+The "Find Hospitals" card had no routerLink and had been inert since Phase 1.
+Given one attribute, symmetrical with the doctors card beside it. The navbar was
+not touched, as instructed, so this is the only way in.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

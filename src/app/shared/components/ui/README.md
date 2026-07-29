@@ -17,7 +17,11 @@ Currently here:
 Density and sizing are CSS custom properties rather than inputs, so consumers
 can vary them per breakpoint (ADR-024).
 
-Next to land: `hospital-card`, `rating-summary`, `spinner`, `pagination`,
+Next to land: `rating-summary`, `spinner`, `pagination`,
 `doctor-card-skeleton`.
+
+`hospital-card` lives in `features/hospitals/` for now — the search page is its
+only consumer. Hospital Details would be the second, and that is when moving it
+here is justified (ADR-031).
 
 See `../README.md` for the grouping rules.

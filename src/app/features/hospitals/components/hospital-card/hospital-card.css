@@ -1,0 +1,110 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-soft);
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: #c7d2fe;
+  box-shadow: var(--shadow-hover);
+}
+
+.head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+}
+
+.logo {
+  --avatar-size: 56px;
+  --avatar-font-size: 18px;
+}
+
+.identity {
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.where {
+  margin: 4px 0 0;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.address {
+  margin: 2px 0 0;
+}
+
+.muted {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.rating {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.open {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.departments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.more {
+  white-space: nowrap;
+}
+
+/* Pushes the action to the bottom so cards in a row line up. */
+.actions {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.actions .btn:disabled {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.actions .btn:disabled:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text-secondary);
+}

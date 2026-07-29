@@ -1,0 +1,50 @@
+<section class="hospitals-page">
+  <header class="page-header">
+    <h1>Find Hospitals</h1>
+    <p>Search hospitals across Deoria and Gorakhpur.</p>
+  </header>
+
+  <div class="search-panel">
+    <label class="search-label" for="hospital-query">Hospital, city or specialty</label>
+
+    <input
+      class="form-control"
+      id="hospital-query"
+      type="search"
+      autocomplete="off"
+      placeholder="Try 'Gorakhpur', 'Cardiologist' or 'Drishti'"
+      data-testid="search-input"
+      [value]="query()"
+      (input)="onQueryInput($any($event.target).value)"
+    />
+  </div>
+
+  <div class="results">
+    <p class="result-count" data-testid="result-count">
+      {{ results().length }}
+      {{ results().length === 1 ? 'hospital' : 'hospitals' }}
+
+      @if (hasQuery()) {
+        matching “{{ query().trim() }}”
+      }
+    </p>
+
+    @if (hasResults()) {
+      <!-- The page owns the grid; the card only owns itself. -->
+      <div class="hospital-grid" role="list" data-testid="hospital-grid">
+        @for (hospital of results(); track hospital.id) {
+          <app-hospital-card role="listitem" [hospital]="hospital" [headingLevel]="2" />
+        }
+      </div>
+    } @else {
+      <app-empty-state data-testid="hospitals-empty" title="No hospitals match your search">
+        Nothing matched “{{ query().trim() }}”. Try a city, a department, or part of a hospital’s
+        name.
+
+        <button emptyStateActions class="btn btn--primary" type="button" (click)="clearQuery()">
+          Clear search
+        </button>
+      </app-empty-state>
+    }
+  </div>
+</section>

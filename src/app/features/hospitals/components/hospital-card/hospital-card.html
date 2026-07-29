@@ -1,0 +1,67 @@
+<article class="card">
+  <div class="head">
+    <app-avatar class="logo" [name]="hospital().name" [photoUrl]="hospital().logoUrl" />
+
+    <div class="identity">
+      <!--
+        role="heading" with aria-level: the rank is an input, and Angular cannot
+        template a dynamic tag name without duplicating the markup (as DoctorCard).
+      -->
+      <span class="name" role="heading" [attr.aria-level]="headingLevel()" data-testid="name">
+        {{ hospital().name }}
+      </span>
+
+      <p class="where">
+        <span class="city" data-testid="city">{{ hospital().address.city.name }}</span>
+        <span class="muted"> · {{ hospital().address.district.name }}</span>
+      </p>
+
+      <p class="address muted" data-testid="address">{{ hospital().address.line }}</p>
+    </div>
+  </div>
+
+  <ul class="meta">
+    @if (hospital().rating; as rating) {
+      <li class="meta-item rating">
+        <app-rating-stars [value]="rating.value" [reviewCount]="rating.reviewCount" />
+      </li>
+    }
+
+    <li class="meta-item" data-testid="doctor-count">
+      {{ hospital().doctorCount }}
+      {{ hospital().doctorCount === 1 ? 'doctor' : 'doctors' }}
+    </li>
+
+    @if (hospital().isOpen24Hours) {
+      <li class="meta-item open">Open 24 hours</li>
+    }
+  </ul>
+
+  @if (visibleDepartments().length) {
+    <div class="departments">
+      <app-tag-list variant="neutral" ariaLabel="Departments" [items]="visibleDepartments()" />
+
+      @if (hiddenDepartmentCount() > 0) {
+        <span class="more muted" data-testid="more-departments">
+          +{{ hiddenDepartmentCount() }} more
+        </span>
+      }
+    </div>
+  }
+
+  <div class="actions">
+    @if (detailsRoute(); as route) {
+      <a class="btn btn--ghost" [routerLink]="route" data-testid="view-details">View Details</a>
+    } @else {
+      <button
+        class="btn btn--ghost"
+        type="button"
+        disabled
+        title="Hospital profiles are not available yet"
+        data-testid="view-details"
+      >
+        View Details
+      </button>
+    }
+  </div>
+</article>

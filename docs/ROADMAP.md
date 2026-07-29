@@ -72,11 +72,13 @@ Deliberately not added: the card action slot stays empty per ADR-018.
 
 ✅ Models, Mock Data, HospitalService — ADR-025
 
-⬜ Hospital Search Page
+✅ Hospital Search Page — `/hospitals?q=` — ADR-031
 
-⬜ Hospital Card
+✅ Hospital Card — feature-local until Details is a second consumer — ADR-031
 
 ⬜ Hospital Details
+
+Turns on HospitalCard's `detailsRoute`, which is disabled until then.
 
 ⬜ Doctors Available in Hospital (Reuse DoctorCard)
 

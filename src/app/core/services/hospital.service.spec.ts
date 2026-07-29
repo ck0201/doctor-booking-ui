@@ -147,6 +147,67 @@ describe('HospitalService', () => {
     });
   });
 
+  describe('searchByText', () => {
+    it('returns everything for an empty query', () => {
+      expect(service.searchByText('')).toEqual(service.getHospitals());
+      expect(service.searchByText('   ')).toEqual(service.getHospitals());
+    });
+
+    it('matches on hospital name', () => {
+      expect(service.searchByText('drishti').map((hospital) => hospital.name)).toEqual([
+        'Drishti Eye Hospital',
+      ]);
+    });
+
+    it('matches on city', () => {
+      const results = service.searchByText('salempur');
+
+      expect(results.length).toBeGreaterThan(0);
+      expect(results.every((hospital) => hospital.address.city.name === 'Salempur')).toBe(true);
+    });
+
+    it('matches on department', () => {
+      const results = service.searchByText('neurologist');
+
+      expect(results.length).toBeGreaterThan(0);
+      expect(
+        results.every((hospital) =>
+          hospital.departments.some((department) => department.name === 'Neurologist'),
+        ),
+      ).toBe(true);
+    });
+
+    it('ignores case and surrounding space', () => {
+      expect(service.searchByText('  DRISHTI  ').length).toBe(1);
+    });
+
+    it('matches part of a word', () => {
+      expect(service.searchByText('eye').length).toBeGreaterThan(0);
+    });
+
+    it('returns nothing when there is no match', () => {
+      expect(service.searchByText('zzzz')).toEqual([]);
+    });
+
+    it('ORs the fields rather than ANDing them', () => {
+      // 'gorakhpur' is a city and appears in hospital names; both kinds come back.
+      const results = service.searchByText('gorakhpur');
+      const byCity = results.filter((hospital) => hospital.address.city.name === 'Gorakhpur');
+      const byName = results.filter((hospital) => hospital.name.includes('Gorakhpur'));
+
+      expect(byCity.length).toBeGreaterThan(0);
+      expect(byName.length).toBeGreaterThan(0);
+      expect(results.length).toBeGreaterThanOrEqual(byCity.length);
+    });
+
+    it('returns narrow card data', () => {
+      // @ts-expect-error text search never hands out profile detail.
+      const asProfiles: readonly Hospital[] = service.searchByText('');
+
+      expect(asProfiles.length).toBeGreaterThan(0);
+    });
+  });
+
   describe('isOpenOn', () => {
     it('is always open for a round-the-clock hospital', () => {
       const generalHospital = service.getById(12)!;

@@ -17,6 +17,10 @@ export const routes: Routes = [
     loadChildren: () => import('@features/booking/booking.routes'),
   },
   {
+    path: 'hospitals',
+    loadChildren: () => import('@features/hospitals/hospitals.routes'),
+  },
+  {
     // Read-only appointment history (ADR-019, ADR-028).
     path: 'appointments',
     loadChildren: () => import('@features/appointments/appointments.routes'),

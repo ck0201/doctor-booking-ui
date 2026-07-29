@@ -49,6 +49,31 @@ export class HospitalService {
   }
 
   /**
+   * One free-text search across name, city and department.
+   *
+   * Separate from search() above rather than layered on it: that one narrows by
+   * several criteria at once, which is an AND, and this one asks "does this word
+   * appear anywhere", which is an OR. Expressing either through the other would
+   * make both harder to read.
+   *
+   * An empty query means everything, so the page opens on the full list rather
+   * than on a prompt.
+   */
+  searchByText(query: string): readonly HospitalCardData[] {
+    const text = query.trim().toLowerCase();
+    if (!text) {
+      return HOSPITALS;
+    }
+
+    return HOSPITALS.filter(
+      (hospital) =>
+        hospital.name.toLowerCase().includes(text) ||
+        hospital.address.city.name.toLowerCase().includes(text) ||
+        hospital.departments.some((department) => department.name.toLowerCase().includes(text)),
+    );
+  }
+
+  /**
    * Whether the hospital is open on a given weekday.
    *
    * Takes the day rather than reading the clock, so it stays pure and testable;
