@@ -107,7 +107,9 @@ ADR-026.
 
 ⬜ Patient Dashboard
 
-⬜ Doctor Dashboard
+✅ Doctor Dashboard — read-only at `/doctor/dashboard` — ADR-029
+
+Availability toggle is local and unsaved. Not wired to the booking flow.
 
 ---
 

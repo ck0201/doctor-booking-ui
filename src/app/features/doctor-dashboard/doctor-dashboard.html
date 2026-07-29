@@ -1,0 +1,49 @@
+<section class="dashboard">
+  <header class="welcome">
+    <h1>
+      @if (doctor; as doctor) {
+        Welcome back, {{ doctor.name }}
+      } @else {
+        Welcome back
+      }
+    </h1>
+
+    <p class="today" data-testid="today">{{ todayLabel }}</p>
+
+    @if (doctor; as doctor) {
+      <p class="muted">{{ doctor.primarySpecialty.name }}</p>
+    }
+  </header>
+
+  <ul class="stats" data-testid="summary-cards">
+    @for (stat of stats(); track stat.label) {
+      <li>
+        <app-dashboard-stat-card
+          [label]="stat.label"
+          [value]="stat.value"
+          [caption]="stat.caption"
+        />
+      </li>
+    }
+  </ul>
+
+  <div class="panels">
+    <app-profile-section class="panel" title="Today's appointments">
+      @if (hasAppointments()) {
+        <div class="appointments" data-testid="appointment-list">
+          @for (appointment of appointments; track appointment.reference) {
+            <app-dashboard-appointment-row [appointment]="appointment" />
+          }
+        </div>
+      } @else {
+        <app-empty-state data-testid="appointments-empty" title="No appointments today">
+          Nothing is booked for today. Slots you publish will appear here.
+        </app-empty-state>
+      }
+    </app-profile-section>
+
+    <app-profile-section class="panel" title="Availability">
+      <app-availability-panel [availability]="availability" [(isAvailable)]="isAvailableToday" />
+    </app-profile-section>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+<dl class="facts">
+  <div class="fact">
+    <dt>Working hours</dt>
+    <dd data-testid="working-hours">{{ workingHoursLabel() }}</dd>
+  </div>
+
+  <div class="fact">
+    <dt>Slot duration</dt>
+    <dd data-testid="slot-duration">{{ slotDurationLabel() }}</dd>
+  </div>
+
+  <div class="fact">
+    <dt>Today</dt>
+    <dd>
+      <span
+        class="state"
+        [class.state--available]="isAvailable()"
+        [class.state--unavailable]="!isAvailable()"
+        data-testid="availability-state"
+      >
+        {{ isAvailable() ? 'Available' : 'Unavailable' }}
+      </span>
+    </dd>
+  </div>
+</dl>
+
+<button
+  class="toggle"
+  type="button"
+  role="switch"
+  data-testid="availability-toggle"
+  [class.toggle--on]="isAvailable()"
+  [attr.aria-checked]="isAvailable()"
+  (click)="toggle()"
+>
+  <span class="toggle-track" aria-hidden="true"><span class="toggle-knob"></span></span>
+  <span class="toggle-text">{{ isAvailable() ? 'Available' : 'Unavailable' }}</span>
+</button>
+
+<p class="note">Applies to today only, and is not saved.</p>

@@ -22,6 +22,11 @@ export const routes: Routes = [
     loadChildren: () => import('@features/appointments/appointments.routes'),
   },
   {
+    // Doctor-facing area; currently just the dashboard (ADR-019, ADR-029).
+    path: 'doctor',
+    loadChildren: () => import('@features/doctor-dashboard/doctor-dashboard.routes'),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

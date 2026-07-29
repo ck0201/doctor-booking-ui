@@ -1,0 +1,67 @@
+.dashboard {
+  max-width: 1100px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.welcome {
+  margin-bottom: 20px;
+}
+
+.welcome h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.today {
+  margin: 6px 0 0;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.muted {
+  margin: 2px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.appointments {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .dashboard {
+    padding: 32px 24px 72px;
+  }
+
+  .welcome h1 {
+    font-size: 32px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .panels {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}

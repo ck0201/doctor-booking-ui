@@ -1,0 +1,8 @@
+<div class="stat">
+  <p class="stat-value" data-testid="stat-value">{{ value() }}</p>
+  <p class="stat-label" data-testid="stat-label">{{ label() }}</p>
+
+  @if (caption(); as caption) {
+    <p class="stat-caption">{{ caption }}</p>
+  }
+</div>

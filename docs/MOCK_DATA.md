@@ -40,6 +40,8 @@ booking-availability.mock.ts
 
 appointments.mock.ts
 
+doctor-dashboard.mock.ts
+
 Doctors reference specialties and cities by id through a lookup helper, so the
 mocks cannot drift apart — an unknown id throws at module load.
 

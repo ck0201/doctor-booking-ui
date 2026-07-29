@@ -1,0 +1,12 @@
+<div class="row" [class.row--active]="appointment().status === 'in-progress'">
+  <p class="time" data-testid="time">{{ timeLabel() }}</p>
+
+  <div class="who">
+    <p class="patient" data-testid="patient">{{ appointment().patientName }}</p>
+    <p class="reference" data-testid="reference">{{ appointment().reference }}</p>
+  </div>
+
+  <span class="status" [class]="'status--' + appointment().status" data-testid="status">
+    {{ statusLabel() }}
+  </span>
+</div>

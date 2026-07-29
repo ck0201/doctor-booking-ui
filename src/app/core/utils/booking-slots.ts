@@ -84,9 +84,14 @@ export function timeKey(hour: number, minute: number): string {
   return `${`${hour}`.padStart(2, '0')}${`${minute}`.padStart(2, '0')}`;
 }
 
-/** '10:00 AM – 10:15 AM'. One definition, used by the confirmation and the history. */
+/** '09:00 AM – 05:00 PM'. The one place the dash between two times is decided. */
+export function formatRange(from: string, to: string): string {
+  return `${from} – ${to}`;
+}
+
+/** '10:00 AM – 10:15 AM'. Used by the confirmation, the history and the dashboard. */
 export function formatTimeRange(time: AppointmentTime): string {
-  return `${time.startsAt} – ${time.endsAt}`;
+  return formatRange(time.startsAt, time.endsAt);
 }
 
 export function addMinutes(

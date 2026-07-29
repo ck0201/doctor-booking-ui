@@ -774,6 +774,74 @@ shared. DoctorCard was considered for the list rows and rejected — it brings i
 own card surface, heading and stretched link, so nesting it would double the card
 chrome and it has no room for a reference, a date or a status.
 
+---
+
+## ADR-029
+
+Decision
+
+The doctor dashboard is its own feature at features/doctor-dashboard, lazy-loaded
+under the `doctor` route segment, and it reads from a new
+DoctorDashboardService rather than from DoctorService.
+
+Reason
+
+DoctorService answers questions patients ask — search, profile, who works at this
+hospital. The dashboard answers questions a doctor asks about their own day. Two
+audiences in one service would have made it the widest class in the app and left
+the patient-facing reads entangled with a view that will one day sit behind
+authentication.
+
+The route is nested (`doctor` in app.routes.ts, `dashboard` inside the feature)
+so a second doctor page costs a line in the feature and nothing at the root.
+
+Not connected to the booking flow, as instructed. The dashboard's appointments
+are not produced by createBooking and its references deliberately do not overlap
+the patient history's — there is a test asserting that, so nobody later reads the
+two lists as one dataset.
+
+Models
+
+Separate from the patient-facing ones. A dashboard row's subject is the patient,
+not the doctor, and a doctor sees a consultation in progress where a patient's
+history never does. Sharing AppointmentStatus would have meant adding
+'in-progress' to a union whose exhaustive labels and ordering drive the patient
+history's filters — changing a finished feature to serve this one.
+
+AppointmentTime is reused, which is what extracting it in ADR-028 was for.
+
+Availability toggle
+
+The published state comes from the service; the page holds a linkedSignal copy,
+so the switch changes this page and nothing else. Nothing is written back and no
+other screen observes it. The panel says as much on screen, because a switch that
+silently forgets is worse than no switch.
+
+The summary cards deliberately do not react to it. "Available slots remaining"
+stays what the service reported: making it drop to zero would imply the toggle
+had done something, which it has not.
+
+Formatting
+
+formatRange was added to booking-slots as the one place the dash between two
+times is decided; formatTimeRange now delegates to it, and the dashboard's working
+hours use it directly. The doctor's slot duration is dashboard data at 30 minutes,
+unrelated to the booking grid's SLOT_DURATION_MINUTES, because the two are not
+the same thing.
+
+Structure
+
+Single-page feature, so the page sits at the feature root rather than in a folder
+repeating its own name. Booking and appointments nest their pages because those
+features expect siblings.
+
+Not promoted
+
+A status badge now exists in three places — patient history, dashboard rows,
+availability state. It is a plausible shared component, but promoting it means
+editing AppointmentCard and its assertions, which is a finished feature. Left
+alone; worth doing as its own change if a fourth appears.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery
