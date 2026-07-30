@@ -34,7 +34,7 @@ const HOSPITAL: HospitalCardData = {
 })
 class HostComponent {
   readonly hospital = signal<HospitalCardData>(HOSPITAL);
-  readonly route = signal<unknown[] | null>(null);
+  readonly route = signal<unknown[]>(['/hospitals', 1]);
 }
 
 describe('HospitalCard', () => {
@@ -131,25 +131,23 @@ describe('HospitalCard', () => {
     expect(heading.getAttribute('aria-level')).toBe('2');
   });
 
-  it('disables View Details while there is no profile to open', () => {
+  it('links View Details at the hospital profile', () => {
     const cta = query('[data-testid="view-details"]')!;
 
-    expect(cta.tagName).toBe('BUTTON');
-    expect(cta.hasAttribute('disabled')).toBe(true);
-    expect(cta.getAttribute('title')).toContain('not available yet');
-  });
-
-  it('turns View Details into a link once a route is supplied', () => {
-    host.route.set(['/hospitals', 1]);
-    fixture.detectChanges();
-
-    const cta = query('[data-testid="view-details"]')!;
     expect(cta.tagName).toBe('A');
     expect(cta.getAttribute('href')).toBe('/hospitals/1');
+    expect(cta.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('follows whichever hospital it was given', () => {
+    host.route.set(['/hospitals', 9]);
+    fixture.detectChanges();
+
+    expect(query('[data-testid="view-details"]')?.getAttribute('href')).toBe('/hospitals/9');
   });
 
   it('shows no booking action', () => {
     expect(text()).not.toContain('Book');
-    expect(fixture.nativeElement.querySelectorAll('button').length).toBe(1);
+    expect(fixture.nativeElement.querySelectorAll('button').length).toBe(0);
   });
 });

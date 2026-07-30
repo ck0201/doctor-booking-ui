@@ -76,11 +76,9 @@ Deliberately not added: the card action slot stays empty per ADR-018.
 
 ✅ Hospital Card — feature-local until Details is a second consumer — ADR-031
 
-⬜ Hospital Details
+✅ Hospital Details — `/hospitals/:hospitalId` — ADR-032
 
-Turns on HospitalCard's `detailsRoute`, which is disabled until then.
-
-⬜ Doctors Available in Hospital (Reuse DoctorCard)
+✅ Doctors Available in Hospital (Reuses DoctorCard)
 
 ---
 

@@ -951,6 +951,40 @@ The "Find Hospitals" card had no routerLink and had been inert since Phase 1.
 Given one attribute, symmetrical with the doctors card beside it. The navbar was
 not touched, as instructed, so this is the only way in.
 
+---
+
+## ADR-032
+
+Decision
+
+Hospital Details at /hospitals/:hospitalId, in the existing hospitals feature. No
+new service method, no new model, no new mock data.
+
+Reason
+
+Everything it needs already existed: HospitalService.getById for the profile and
+DoctorService.getByHospital — the seam ADR-025 added — for the doctor list. The
+page only composes.
+
+Unknown and malformed ids render not-found in place through the shared
+toRouteId, per ADR-023.
+
+Doctors
+
+Rendered with DoctorCard, with practice omitted (it is the page you are on) and
+actions omitted, so no booking action appears here. Doctor Details remains the
+single booking entry point, and the cards link there.
+
+HospitalCard
+
+detailsRoute became input.required and the temporary disabled branch was
+removed. Every consumer now has a route, so the null case was dead code rather
+than a state worth keeping.
+
+Still feature-local. Hospital Details renders its own header rather than a card,
+so the search page is still HospitalCard's only consumer and the two-consumer
+rule from ADR-024 is not yet met.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

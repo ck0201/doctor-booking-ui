@@ -29,14 +29,8 @@ export class HospitalCard {
 
   readonly headingLevel = input<2 | 3 | 4>(3);
 
-  /**
-   * Router commands for the hospital's profile.
-   *
-   * Null while /hospitals/:id does not exist, which leaves the call to action
-   * visibly disabled rather than sending anyone to a route that would bounce off
-   * the wildcard — the same choice DoctorCard made in ADR-018.
-   */
-  readonly detailsRoute = input<unknown[] | null>(null);
+  /** Router commands for the hospital's profile. */
+  readonly detailsRoute = input.required<unknown[]>();
 
   private readonly departmentNames = computed(() =>
     this.hospital().departments.map((department) => department.name),

@@ -289,6 +289,53 @@ describe('HospitalSearch', () => {
     });
   });
 
+  describe('View Details integration', () => {
+    const ctas = () =>
+      Array.from(
+        harness.routeNativeElement?.querySelectorAll('[data-testid="view-details"]') ?? [],
+      ) as HTMLAnchorElement[];
+
+    it('gives every card an enabled link to its profile', async () => {
+      const page = await load('/hospitals');
+      const links = ctas();
+
+      expect(links.length).toBe(page.results().length);
+      expect(links.every((link) => link.tagName === 'A')).toBe(true);
+      expect(links.map((link) => link.getAttribute('href'))).toEqual(
+        page.results().map((hospital) => `/hospitals/${hospital.id}`),
+      );
+    });
+
+    it('navigates to Hospital Details when followed', async () => {
+      const page = await load('/hospitals?q=drishti');
+      const expectedId = page.results()[0].id;
+
+      ctas()[0].click();
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe(`/hospitals/${expectedId}`);
+    });
+
+    it('lands on the hospital that was clicked', async () => {
+      await load('/hospitals?q=drishti');
+      ctas()[0].click();
+      await harness.fixture.whenStable();
+
+      expect(harness.routeNativeElement?.textContent).toContain('Drishti Eye Hospital');
+    });
+
+    it('leaves the search in the URL to come back to', async () => {
+      await load('/hospitals?q=drishti');
+      ctas()[0].click();
+      await harness.fixture.whenStable();
+
+      const restored = await load('/hospitals?q=drishti');
+
+      expect(router.url).toBe('/hospitals?q=drishti');
+      expect(restored.query()).toBe('drishti');
+    });
+  });
+
   describe('scope', () => {
     it('shows no booking action anywhere', async () => {
       await load('/hospitals');

@@ -33,7 +33,12 @@
       <!-- The page owns the grid; the card only owns itself. -->
       <div class="hospital-grid" role="list" data-testid="hospital-grid">
         @for (hospital of results(); track hospital.id) {
-          <app-hospital-card role="listitem" [hospital]="hospital" [headingLevel]="2" />
+          <app-hospital-card
+            role="listitem"
+            [hospital]="hospital"
+            [headingLevel]="2"
+            [detailsRoute]="['/hospitals', hospital.id]"
+          />
         }
       </div>
     } @else {

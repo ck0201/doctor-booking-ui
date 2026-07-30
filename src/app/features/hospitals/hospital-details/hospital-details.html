@@ -1,0 +1,121 @@
+<section class="hospital-details">
+  <app-breadcrumbs class="page-breadcrumbs" [items]="breadcrumbs()" />
+
+  @if (hospital(); as hospital) {
+    <header class="card profile-header">
+      <app-avatar class="logo" [name]="hospital.name" [photoUrl]="hospital.logoUrl" />
+
+      <div class="identity">
+        <h1 class="name">{{ hospital.name }}</h1>
+
+        <p class="where">
+          <span data-testid="city">{{ hospital.address.city.name }}</span>
+          <span class="muted"> · {{ hospital.address.district.name }}</span>
+        </p>
+
+        <ul class="stats">
+          @if (hospital.rating; as rating) {
+            <li class="stat rating">
+              <app-rating-stars [value]="rating.value" [reviewCount]="rating.reviewCount" />
+            </li>
+          }
+
+          <li class="stat" data-testid="doctor-count">
+            {{ hospital.doctorCount }}
+            {{ hospital.doctorCount === 1 ? 'doctor' : 'doctors' }}
+          </li>
+
+          @if (hospital.isOpen24Hours) {
+            <li class="stat open">Open 24 hours</li>
+          }
+        </ul>
+      </div>
+    </header>
+
+    <div class="panels">
+      <div class="main">
+        <app-profile-section title="About">
+          <p data-testid="about">{{ hospital.description }}</p>
+        </app-profile-section>
+
+        <app-profile-section title="Departments">
+          <app-tag-list variant="neutral" ariaLabel="Departments" [items]="departmentNames()" />
+        </app-profile-section>
+
+        @if (hospital.facilities.length) {
+          <app-profile-section title="Facilities">
+            <app-tag-list variant="neutral" ariaLabel="Facilities" [items]="hospital.facilities" />
+          </app-profile-section>
+        }
+
+        <app-profile-section title="Doctors at this hospital">
+          @if (doctors().length) {
+            <div class="doctor-grid" role="list" data-testid="doctor-list">
+              @for (doctor of doctors(); track doctor.id) {
+                <app-doctor-card
+                  role="listitem"
+                  [doctor]="doctor"
+                  [headingLevel]="3"
+                  [omit]="['practice', 'actions']"
+                  [detailsRoute]="['/doctors', doctor.id]"
+                />
+              }
+            </div>
+          } @else {
+            <app-empty-state data-testid="doctors-empty" title="No doctors listed yet">
+              No doctors have listed a practice at {{ hospital.name }}. Try searching by specialty
+              instead.
+
+              <a emptyStateActions class="btn btn--primary" routerLink="/doctors">Find a doctor</a>
+            </app-empty-state>
+          }
+        </app-profile-section>
+      </div>
+
+      <aside class="side">
+        <app-profile-section title="Contact">
+          <dl class="facts">
+            <div class="fact">
+              <dt>Address</dt>
+              <dd data-testid="address">
+                {{ hospital.address.line }}
+                <span class="muted">· {{ hospital.address.city.name }}</span>
+              </dd>
+            </div>
+
+            <div class="fact">
+              <dt>Phone</dt>
+              <dd>
+                <a class="phone" data-testid="contact" [href]="'tel:' + hospital.contactNumber">
+                  {{ hospital.contactNumber }}
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </app-profile-section>
+
+        <app-profile-section title="Opening hours">
+          @if (hospital.isOpen24Hours) {
+            <p class="open" data-testid="opening-hours">Open 24 hours, every day</p>
+          } @else {
+            <ul class="hours" data-testid="opening-hours">
+              @for (label of openingHoursLabels(); track label) {
+                <li class="muted">{{ label }}</li>
+              }
+            </ul>
+          }
+        </app-profile-section>
+      </aside>
+    </div>
+  } @else {
+    <app-empty-state class="not-found" data-testid="not-found" title="Hospital not found">
+      We could not find a hospital for
+      <strong data-testid="requested-id">{{ hospitalId() }}</strong
+      >. The profile may have been removed, or the link may be incorrect.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/hospitals">
+        Back to hospital search
+      </a>
+    </app-empty-state>
+  }
+</section>
