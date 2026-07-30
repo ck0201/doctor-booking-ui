@@ -76,7 +76,7 @@ describe('DoctorDashboard', () => {
     it('shows four of them', async () => {
       await open();
 
-      expect(queryAll('app-dashboard-stat-card').length).toBe(4);
+      expect(queryAll('app-stat-card').length).toBe(4);
       expect(query('[data-testid="summary-cards"]')).toBeTruthy();
     });
 

@@ -119,9 +119,9 @@ Availability toggle is local and unsaved. Not wired to the booking flow.
 
 ### Administration
 
-⬜ Admin Portal
+✅ Admin Portal — read-only operational dashboard at `/admin` — ADR-034
 
-`/admin` exists as a guarded placeholder only (ADR-033).
+Summary cards, doctor/hospital/appointment tables, mock actions only.
 
 ⬜ Reporting
 

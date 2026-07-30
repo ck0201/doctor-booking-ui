@@ -1,13 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardStatCard } from './dashboard-stat-card';
+import { StatCard } from './stat-card';
 
 @Component({
-  imports: [DashboardStatCard],
-  template: `
-    <app-dashboard-stat-card [label]="label()" [value]="value()" [caption]="caption()" />
-  `,
+  imports: [StatCard],
+  template: ` <app-stat-card [label]="label()" [value]="value()" [caption]="caption()" /> `,
 })
 class HostComponent {
   readonly label = signal("Today's appointments");
@@ -15,7 +13,7 @@ class HostComponent {
   readonly caption = signal<string | undefined>('Mon 10 Aug 2026');
 }
 
-describe('DashboardStatCard', () => {
+describe('StatCard', () => {
   let fixture: ComponentFixture<HostComponent>;
   let host: HostComponent;
 

@@ -12,6 +12,7 @@ Currently here:
 | `profile-section` | Titled card section for detail pages (ADR-022)          |
 | `tag-list`     | Pill labels; `primary` and `neutral` variants              |
 | `empty-state`  | Projected message, optional `[emptyStateActions]`          |
+| `stat-card`    | One headline figure; promoted in ADR-034                    |
 | `doctor-card`  | Standard mode only (ADR-017)                               |
 
 Density and sizing are CSS custom properties rather than inputs, so consumers

@@ -1,0 +1,183 @@
+<section class="admin-page">
+  <header class="welcome">
+    <h1>Admin</h1>
+
+    @if (user(); as user) {
+      <p class="muted" data-testid="admin-phone">Signed in as {{ user.phoneNumber }}</p>
+    }
+  </header>
+
+  <ul class="stats" data-testid="summary-cards">
+    @for (stat of summary(); track stat.label) {
+      <li>
+        <app-stat-card [label]="stat.label" [value]="stat.value" [caption]="stat.caption" />
+      </li>
+    }
+  </ul>
+
+  <app-profile-section title="Doctors">
+    @if (doctors.length) {
+      <div class="table-scroll">
+        <table class="table" data-testid="doctors-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Specialty</th>
+              <th scope="col">Hospital</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (doctor of doctors; track doctor.id) {
+              <tr [attr.data-testid]="'doctor-row-' + doctor.id">
+                <th scope="row">{{ doctor.name }}</th>
+                <td>{{ doctor.primarySpecialty.name }}</td>
+                <td>{{ hospitalName(doctor) }}</td>
+                <td>
+                  <span
+                    class="pill"
+                    [class.pill--on]="isActive(doctor)"
+                    [class.pill--off]="!isActive(doctor)"
+                    [attr.data-testid]="'doctor-status-' + doctor.id"
+                  >
+                    {{ statusLabel(doctor) }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <a
+                    class="btn btn--ghost btn--sm"
+                    [routerLink]="['/doctors', doctor.id]"
+                    [attr.data-testid]="'doctor-view-' + doctor.id"
+                  >
+                    View
+                  </a>
+
+                  <button
+                    class="btn btn--ghost btn--sm"
+                    type="button"
+                    [attr.data-testid]="'doctor-toggle-' + doctor.id"
+                    (click)="toggleDoctor(doctor)"
+                  >
+                    {{ isEnabled(doctor) ? 'Disable' : 'Enable' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <app-empty-state data-testid="doctors-empty" title="No doctors">
+        No doctors are registered yet.
+      </app-empty-state>
+    }
+  </app-profile-section>
+
+  <app-profile-section title="Hospitals">
+    @if (hospitals.length) {
+      <div class="table-scroll">
+        <table class="table" data-testid="hospitals-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">City</th>
+              <th scope="col">Rating</th>
+              <th scope="col">Doctors</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (hospital of hospitals; track hospital.id) {
+              <tr [attr.data-testid]="'hospital-row-' + hospital.id">
+                <th scope="row">{{ hospital.name }}</th>
+                <td>{{ hospital.address.city.name }}</td>
+                <td>{{ hospital.rating ? hospital.rating.value : '—' }}</td>
+                <td>{{ hospital.doctorCount }}</td>
+                <td class="actions">
+                  <a
+                    class="btn btn--ghost btn--sm"
+                    [routerLink]="['/hospitals', hospital.id]"
+                    [attr.data-testid]="'hospital-view-' + hospital.id"
+                  >
+                    View
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <app-empty-state data-testid="hospitals-empty" title="No hospitals">
+        No hospitals are registered yet.
+      </app-empty-state>
+    }
+  </app-profile-section>
+
+  <app-profile-section title="Appointments">
+    @if (appointments.length) {
+      <div class="table-scroll">
+        <table class="table" data-testid="appointments-table">
+          <thead>
+            <tr>
+              <th scope="col">Patient</th>
+              <th scope="col">Doctor</th>
+              <th scope="col">Hospital</th>
+              <th scope="col">Date</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (appointment of appointments; track appointment.reference) {
+              <tr [attr.data-testid]="'appointment-row-' + appointment.reference">
+                <!-- History is the patient's own, so the reference identifies them here. -->
+                <th scope="row">{{ appointment.reference }}</th>
+                <td>{{ appointment.doctor.name }}</td>
+                <td>{{ appointmentHospital(appointment) }}</td>
+                <td>{{ appointmentDate(appointment) }}</td>
+                <td>
+                  <span class="pill" [class]="'pill--' + appointment.status">
+                    {{ appointmentStatusLabel(appointment) }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button
+                    class="btn btn--ghost btn--sm"
+                    type="button"
+                    [attr.aria-expanded]="selectedAppointment() === appointment.reference"
+                    [attr.data-testid]="'appointment-view-' + appointment.reference"
+                    (click)="toggleAppointment(appointment.reference)"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+
+              @if (selectedAppointment() === appointment.reference) {
+                <tr class="detail-row">
+                  <td
+                    colspan="6"
+                    [attr.data-testid]="'appointment-detail-' + appointment.reference"
+                  >
+                    {{ appointment.doctor.primarySpecialty.name }} ·
+                    {{ appointment.time.startsAt }} – {{ appointment.time.endsAt }} ·
+                    {{ appointmentStatusLabel(appointment) }}
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <app-empty-state data-testid="appointments-empty" title="No appointments">
+        No appointments have been booked yet.
+      </app-empty-state>
+    }
+  </app-profile-section>
+</section>

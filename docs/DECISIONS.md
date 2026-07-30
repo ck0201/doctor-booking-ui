@@ -1037,6 +1037,50 @@ Admin placeholder
 exist or that redirect would bounce off the wildcard. features/admin holds a
 placeholder page; the portal itself is a later phase.
 
+---
+
+## ADR-034
+
+Decision
+
+The admin panel is a read-only operational dashboard at /admin, reading through a
+new AdminService that aggregates DoctorService, HospitalService and
+BookingService. StatCard was promoted to shared.
+
+Reason
+
+AdminService owns no data — it asks the existing services, so the admin figures
+cannot disagree with the pages they describe, and the counting stays out of the
+component.
+
+Promotion
+
+DashboardStatCard moved from features/doctor-dashboard/components to
+shared/components/ui/stat-card and was renamed StatCard. The admin summary is its
+second genuine consumer, which is the bar ADR-024 sets. The doctor dashboard was
+updated to import it from shared; nothing about its behaviour changed.
+
+Mock actions
+
+View links to the profile that already exists — /doctors/:id and /hospitals/:id —
+so it is real navigation rather than a stub. Appointments have no profile page, so
+their View toggles an inline detail row, which avoids the modal the non-goals rule
+out.
+
+Enable/Disable holds a local Set of doctor ids and is not saved. The Active
+Doctors figure counts available-and-not-disabled, so the toggle visibly does
+something; a test asserts the service still reports the unmodified count.
+
+Deliberately absent
+
+No CRUD, forms, modals, charts, sorting, pagination, export or user management,
+per the brief. Tables are plain markup with scope attributes rather than a
+data-table component, since one consumer does not justify one.
+
+Appointment rows show the reference in the patient column, because the mock
+history is a single patient's and carries no patient name. Worth revisiting when
+appointments belong to identifiable patients.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

@@ -5,7 +5,7 @@ import { EmptyState } from '@shared/components/ui/empty-state/empty-state';
 import { ProfileSection } from '@shared/components/ui/profile-section/profile-section';
 import { AvailabilityPanel } from './components/availability-panel/availability-panel';
 import { DashboardAppointmentRow } from './components/dashboard-appointment-row/dashboard-appointment-row';
-import { DashboardStatCard } from './components/dashboard-stat-card/dashboard-stat-card';
+import { StatCard } from '@shared/components/ui/stat-card/stat-card';
 
 interface Stat {
   readonly label: string;
@@ -24,13 +24,7 @@ interface Stat {
  */
 @Component({
   selector: 'app-doctor-dashboard',
-  imports: [
-    EmptyState,
-    ProfileSection,
-    AvailabilityPanel,
-    DashboardAppointmentRow,
-    DashboardStatCard,
-  ],
+  imports: [EmptyState, ProfileSection, AvailabilityPanel, DashboardAppointmentRow, StatCard],
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
