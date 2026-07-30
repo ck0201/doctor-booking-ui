@@ -1,0 +1,204 @@
+.management-page {
+  display: grid;
+  gap: 16px;
+  max-width: 900px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.card {
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.summary h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.where {
+  margin: 4px 0 0;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.muted {
+  margin: 2px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.rating {
+  color: #b45309;
+  font-weight: 600;
+}
+
+/* --- Opening hours --- */
+
+.days {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.day:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.day-name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.closed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.form-control {
+  height: var(--control-height);
+  padding: 0 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-input);
+  background: var(--color-card);
+  color: var(--color-text);
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-control:disabled {
+  background: #f3f4f6;
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.field-error {
+  margin: 4px 0 0;
+  color: var(--color-danger);
+  font-size: 13px;
+}
+
+/* --- Departments and facilities --- */
+
+.adder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.adder .form-control {
+  flex: 1 1 220px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px 5px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: #f8fafc;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chip-remove:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.count {
+  margin-top: 10px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actions .btn:disabled {
+  background: #93b4f5;
+  cursor: not-allowed;
+}
+
+.not-found {
+  --empty-state-padding: 56px 24px;
+  --empty-state-title-size: 20px;
+  --empty-state-title-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .day {
+    grid-template-columns: 140px 110px 1fr 1fr;
+    align-items: center;
+  }
+
+  .day .field-error {
+    grid-column: 2 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .management-page {
+    padding: 32px 24px 72px;
+  }
+}

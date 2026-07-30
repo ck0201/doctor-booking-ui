@@ -1,0 +1,196 @@
+<section class="management-page">
+  @if (hospital(); as hospital) {
+    <header class="card summary">
+      <div>
+        <h1 data-testid="hospital-name">{{ hospital.name }}</h1>
+
+        <p class="where">
+          <span data-testid="hospital-city">{{ hospital.address.city.name }}</span>
+          <span class="muted"> · {{ hospital.address.district.name }}</span>
+        </p>
+
+        <p class="muted" data-testid="hospital-address">{{ hospital.address.line || '—' }}</p>
+      </div>
+
+      @if (hospital.rating; as rating) {
+        <app-rating-stars
+          class="rating"
+          [value]="rating.value"
+          [reviewCount]="rating.reviewCount"
+        />
+      }
+    </header>
+
+    <app-profile-section title="Opening Hours">
+      <ul class="days" data-testid="opening-hours">
+        @for (row of days(); track row.day) {
+          <li class="day" [attr.data-testid]="'day-' + row.day">
+            <span class="day-name">{{ row.label }}</span>
+
+            <label class="closed">
+              <input
+                type="checkbox"
+                [checked]="row.closed"
+                [attr.data-testid]="'closed-' + row.day"
+                (change)="toggleClosed(row.day)"
+              />
+              Closed
+            </label>
+
+            <input
+              class="form-control time"
+              type="time"
+              aria-label="Opens at"
+              [value]="row.opensAt"
+              [disabled]="row.closed"
+              [attr.data-testid]="'opens-' + row.day"
+              (input)="setTime(row.day, 'opensAt', $any($event.target).value)"
+            />
+
+            <input
+              class="form-control time"
+              type="time"
+              aria-label="Closes at"
+              [value]="row.closesAt"
+              [disabled]="row.closed"
+              [attr.data-testid]="'closes-' + row.day"
+              (input)="setTime(row.day, 'closesAt', $any($event.target).value)"
+            />
+
+            @if (isInvalid(row)) {
+              <p class="field-error" [attr.data-testid]="'error-' + row.day">
+                Opening time must be before closing time
+              </p>
+            }
+          </li>
+        }
+      </ul>
+    </app-profile-section>
+
+    <app-profile-section title="Departments">
+      <div class="adder">
+        <input
+          class="form-control"
+          type="text"
+          aria-label="Department name"
+          placeholder="e.g. Cardiologist"
+          data-testid="department-input"
+          [value]="departmentDraft()"
+          (input)="departmentDraft.set($any($event.target).value)"
+          (keydown.enter)="$event.preventDefault(); addDepartment()"
+        />
+
+        <button
+          class="btn btn--primary"
+          type="button"
+          data-testid="add-department"
+          (click)="addDepartment()"
+        >
+          Add
+        </button>
+      </div>
+
+      @if (departmentError(); as message) {
+        <p class="field-error" role="alert" data-testid="department-error">{{ message }}</p>
+      }
+
+      @if (departments().length) {
+        <ul class="chips" data-testid="department-list">
+          @for (name of departments(); track name) {
+            <li class="chip">
+              {{ name }}
+              <button
+                class="chip-remove"
+                type="button"
+                [attr.aria-label]="'Remove ' + name"
+                [attr.data-testid]="'remove-department-' + name"
+                (click)="removeDepartment(name)"
+              >
+                &times;
+              </button>
+            </li>
+          }
+        </ul>
+
+        <p class="count muted">{{ departments().length }} of {{ maxDepartments }}</p>
+      } @else {
+        <p class="muted" data-testid="departments-empty">No departments listed yet.</p>
+      }
+    </app-profile-section>
+
+    <app-profile-section title="Facilities">
+      <div class="adder">
+        <input
+          class="form-control"
+          type="text"
+          aria-label="Facility name"
+          placeholder="e.g. ICU"
+          data-testid="facility-input"
+          [value]="facilityDraft()"
+          (input)="facilityDraft.set($any($event.target).value)"
+          (keydown.enter)="$event.preventDefault(); addFacility()"
+        />
+
+        <button
+          class="btn btn--primary"
+          type="button"
+          data-testid="add-facility"
+          (click)="addFacility()"
+        >
+          Add
+        </button>
+      </div>
+
+      @if (facilityError(); as message) {
+        <p class="field-error" role="alert" data-testid="facility-error">{{ message }}</p>
+      }
+
+      @if (facilities().length) {
+        <ul class="chips" data-testid="facility-list">
+          @for (name of facilities(); track name) {
+            <li class="chip">
+              {{ name }}
+              <button
+                class="chip-remove"
+                type="button"
+                [attr.aria-label]="'Remove ' + name"
+                [attr.data-testid]="'remove-facility-' + name"
+                (click)="removeFacility(name)"
+              >
+                &times;
+              </button>
+            </li>
+          }
+        </ul>
+
+        <p class="count muted">{{ facilities().length }} of {{ maxFacilities }}</p>
+      } @else {
+        <p class="muted" data-testid="facilities-empty">No facilities listed yet.</p>
+      }
+    </app-profile-section>
+
+    <div class="actions">
+      <button
+        class="btn btn--primary"
+        type="button"
+        data-testid="save"
+        [disabled]="!canSave()"
+        (click)="save()"
+      >
+        Save
+      </button>
+
+      <button class="btn btn--ghost" type="button" data-testid="cancel" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  } @else {
+    <app-empty-state class="not-found" data-testid="not-found" title="Hospital not found">
+      We could not find a hospital for
+      <strong data-testid="requested-id">{{ id() }}</strong
+      >, so there is nothing to manage.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/admin">Back to admin</a>
+    </app-empty-state>
+  }
+</section>

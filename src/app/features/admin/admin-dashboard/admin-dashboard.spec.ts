@@ -258,10 +258,12 @@ describe('AdminDashboard', () => {
       expect(text()).toContain('4.5');
     });
 
-    it('links View at the hospital profile', async () => {
+    it('links Manage at the hospital management page', async () => {
       await open();
+      const manage = testId('hospital-manage-1');
 
-      expect(testId('hospital-view-1')?.getAttribute('href')).toBe('/hospitals/1');
+      expect(manage?.textContent?.trim()).toBe('Manage');
+      expect(manage?.getAttribute('href')).toBe('/admin/hospitals/1/manage');
     });
 
     it('offers no editing', async () => {

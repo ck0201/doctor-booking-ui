@@ -109,10 +109,10 @@
                 <td class="actions">
                   <a
                     class="btn btn--ghost btn--sm"
-                    [routerLink]="['/hospitals', hospital.id]"
-                    [attr.data-testid]="'hospital-view-' + hospital.id"
+                    [routerLink]="['/admin/hospitals', hospital.id, 'manage']"
+                    [attr.data-testid]="'hospital-manage-' + hospital.id"
                   >
-                    View
+                    Manage
                   </a>
                 </td>
               </tr>

@@ -506,3 +506,160 @@ describe('HospitalService.addHospital', () => {
     ]);
   });
 });
+
+describe('HospitalService.updateHospitalProfile', () => {
+  let service: HospitalService;
+
+  const hours = (day: Weekday, opensAt: string, closesAt: string) => ({
+    days: [day],
+    opensAt,
+    closesAt,
+  });
+
+  beforeEach(() => {
+    service = TestBed.inject(HospitalService);
+  });
+
+  it('replaces the opening hours', () => {
+    service.updateHospitalProfile(1, {
+      openingHours: [hours('Mon', '09:00 AM', '05:00 PM')],
+      departmentNames: [],
+      facilityNames: [],
+    });
+
+    expect(service.getById(1)?.openingHours).toEqual([hours('Mon', '09:00 AM', '05:00 PM')]);
+  });
+
+  it('replaces the departments, reusing known specialties', () => {
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: ['Cardiologist', 'Dentist'],
+      facilityNames: [],
+    });
+    const departments = service.getById(1)!.departments;
+
+    expect(departments.map((department) => department.name)).toEqual(['Cardiologist', 'Dentist']);
+    expect(departments[0]).toBe(SPECIALTIES.find((item) => item.name === 'Cardiologist'));
+  });
+
+  it('matches a known specialty regardless of case', () => {
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: ['cardiologist'],
+      facilityNames: [],
+    });
+
+    expect(service.getById(1)!.departments[0]).toBe(
+      SPECIALTIES.find((item) => item.name === 'Cardiologist'),
+    );
+  });
+
+  it('mints an id for a department nobody has seen before', () => {
+    const highest = Math.max(...SPECIALTIES.map((specialty) => specialty.id));
+
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: ['Hyperbaric Medicine'],
+      facilityNames: [],
+    });
+    const created = service.getById(1)!.departments[0];
+
+    expect(created.name).toBe('Hyperbaric Medicine');
+    expect(created.id).toBeGreaterThan(highest);
+  });
+
+  it('gives the same coined department the same id every time', () => {
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: ['Hyperbaric Medicine'],
+      facilityNames: [],
+    });
+    const first = service.getById(1)!.departments[0].id;
+
+    service.updateHospitalProfile(2, {
+      openingHours: [],
+      departmentNames: ['hyperbaric medicine'],
+      facilityNames: [],
+    });
+
+    expect(service.getById(2)!.departments[0].id).toBe(first);
+  });
+
+  it('replaces the facilities and trims them', () => {
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: [],
+      facilityNames: ['  ICU  ', 'Pharmacy'],
+    });
+
+    expect(service.getById(1)?.facilities).toEqual(['ICU', 'Pharmacy']);
+  });
+
+  it('preserves every field it does not own', () => {
+    const before = service.getById(1)!;
+
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: [],
+      facilityNames: [],
+    });
+    const after = service.getById(1)!;
+
+    expect(after.id).toBe(before.id);
+    expect(after.name).toBe(before.name);
+    expect(after.address).toBe(before.address);
+    expect(after.rating).toBe(before.rating);
+    expect(after.contactNumber).toBe(before.contactNumber);
+    expect(after.description).toBe(before.description);
+    expect(after.doctorCount).toBe(before.doctorCount);
+    expect(after.isOpen24Hours).toBe(before.isOpen24Hours);
+  });
+
+  it('leaves every other hospital untouched', () => {
+    const others = service.getHospitals().filter((hospital) => hospital.id !== 1);
+
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: ['Cardiologist'],
+      facilityNames: [],
+    });
+
+    for (const other of others) {
+      expect(service.getHospitals()).toContain(other);
+    }
+  });
+
+  it('updates the reactive view', () => {
+    service.updateHospitalProfile(1, {
+      openingHours: [],
+      departmentNames: ['Cardiologist'],
+      facilityNames: ['ICU'],
+    });
+
+    const listed = service.hospitals().find((hospital) => hospital.id === 1)!;
+    expect(listed.departments.map((department) => department.name)).toEqual(['Cardiologist']);
+  });
+
+  it('keeps the hospital findable by its new department', () => {
+    service.updateHospitalProfile(4, {
+      openingHours: [],
+      departmentNames: ['Neurologist'],
+      facilityNames: [],
+    });
+
+    expect(service.searchByText('neurologist').map((hospital) => hospital.id)).toContain(4);
+  });
+
+  it('ignores an unknown id rather than throwing', () => {
+    const before = service.getHospitals().length;
+
+    expect(
+      service.updateHospitalProfile(9999, {
+        openingHours: [],
+        departmentNames: [],
+        facilityNames: [],
+      }),
+    ).toBeUndefined();
+    expect(service.getHospitals().length).toBe(before);
+  });
+});

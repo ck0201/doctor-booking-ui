@@ -125,6 +125,10 @@ Summary cards, doctor/hospital/appointment tables, mock actions only.
 
 ✅ Hospital Registration — `/admin/hospitals/new`, admin only — ADR-035
 
+✅ Hospital Profile Completion — `/admin/hospitals/:id/manage` — ADR-036
+
+Opening hours, departments and facilities. Admin only.
+
 ⬜ Reporting
 
 ⬜ Analytics

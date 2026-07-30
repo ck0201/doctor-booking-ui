@@ -102,3 +102,52 @@ export function addMinutes(
   const total = hour * 60 + minute + minutes;
   return { hour: Math.floor(total / 60) % 24, minute: total % 60 };
 }
+
+/** '09:00 AM' -> { hour: 9, minute: 0 }. Null when it is not a display time. */
+export function parseTimeOfDay(display: string): { hour: number; minute: number } | null {
+  const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(display.trim());
+  if (!match) {
+    return null;
+  }
+
+  const [, rawHour, rawMinute, suffix] = match;
+  const hour12 = Number(rawHour);
+  const minute = Number(rawMinute);
+  if (hour12 < 1 || hour12 > 12 || minute > 59) {
+    return null;
+  }
+
+  const isPm = suffix.toUpperCase() === 'PM';
+  const hour = hour12 === 12 ? (isPm ? 12 : 0) : hour12 + (isPm ? 12 : 0);
+  return { hour, minute };
+}
+
+/** '09:00 AM' -> '09:00', the value an <input type="time"> expects. */
+export function toTimeInputValue(display: string): string {
+  const parsed = parseTimeOfDay(display);
+  if (!parsed) {
+    return '';
+  }
+  return `${`${parsed.hour}`.padStart(2, '0')}:${`${parsed.minute}`.padStart(2, '0')}`;
+}
+
+/** '09:00' -> '09:00 AM'. Empty when the input is blank or malformed. */
+export function fromTimeInputValue(value: string): string {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
+  if (!match) {
+    return '';
+  }
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (hour > 23 || minute > 59) {
+    return '';
+  }
+  return formatTimeOfDay(hour, minute);
+}
+
+/** Minutes since midnight, for comparing an open time against a close time. */
+export function minutesOfDay(value: string): number | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+}

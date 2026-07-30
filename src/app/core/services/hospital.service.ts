@@ -1,8 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { Hospital, HospitalCardData, Weekday } from '../models/hospital.model';
+import { Hospital, HospitalCardData, OpeningHours, Weekday } from '../models/hospital.model';
 import { HospitalSearchCriteria } from '../models/hospital-search-criteria.model';
 import { City, District } from '../models/location.model';
+import { Specialty } from '../models/specialty.model';
 import { DISTRICTS } from '@mock-data/locations.mock';
+import { SPECIALTIES } from '@mock-data/specialties.mock';
 import { HOSPITALS } from '@mock-data/hospitals.mock';
 
 /**
@@ -12,6 +14,18 @@ import { HOSPITALS } from '@mock-data/hospitals.mock';
  * narrow HospitalCardData, only getById returns the full Hospital, and `search`
  * becomes POST /api/hospitals/search without the caller changing.
  */
+
+/** Ceilings the management page enforces, kept with the rules they belong to. */
+export const MAX_DEPARTMENTS = 30;
+export const MAX_FACILITIES = 30;
+
+/** The operational profile the management page owns (ADR-036). */
+export interface HospitalProfileUpdate {
+  readonly openingHours: readonly OpeningHours[];
+  /** Free text; the service turns each into a Specialty. */
+  readonly departmentNames: readonly string[];
+  readonly facilityNames: readonly string[];
+}
 
 /** What the registration form collects. Everything but name and city is optional. */
 export interface HospitalDraft {
@@ -78,6 +92,67 @@ export class HospitalService {
     this.store.update((hospitals) => [...hospitals, hospital]);
     return hospital;
   }
+
+  /**
+   * Replaces the operational profile of one hospital (ADR-036).
+   *
+   * Only the three sections the management page owns are written; everything else
+   * — name, address, rating, contact, doctorCount — is carried through untouched.
+   * Unknown ids are ignored rather than throwing, so a stale link cannot break
+   * the caller.
+   */
+  updateHospitalProfile(id: number, profile: HospitalProfileUpdate): Hospital | undefined {
+    const existing = this.getById(id);
+    if (!existing) {
+      return undefined;
+    }
+
+    const updated: Hospital = {
+      ...existing,
+      openingHours: profile.openingHours,
+      departments: profile.departmentNames.map((name) => this.resolveDepartment(name)),
+      facilities: profile.facilityNames.map((name) => name.trim()),
+      // A hospital open every day, all day, is recorded as the flag rather than
+      // seven windows, which is how the seeded data expresses it (ADR-025).
+      isOpen24Hours: existing.isOpen24Hours,
+    };
+
+    this.store.update((hospitals) =>
+      hospitals.map((hospital) => (hospital.id === id ? updated : hospital)),
+    );
+    return updated;
+  }
+
+  /**
+   * A department is a Specialty, so free text has to become one.
+   *
+   * An existing specialty is reused when the name matches, which keeps hospital
+   * search by department working; a genuinely new name gets its own id.
+   */
+  private resolveDepartment(name: string): Specialty {
+    const trimmed = name.trim();
+    const known = SPECIALTIES.find(
+      (specialty) => specialty.name.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (known) {
+      return known;
+    }
+
+    const custom = this.customDepartments.get(trimmed.toLowerCase());
+    if (custom) {
+      return custom;
+    }
+
+    const created: Specialty = { id: this.nextDepartmentId++, name: trimmed };
+    this.customDepartments.set(trimmed.toLowerCase(), created);
+    return created;
+  }
+
+  /** Departments coined by an admin, so the same name keeps the same id. */
+  private readonly customDepartments = new Map<string, Specialty>();
+
+  private nextDepartmentId =
+    SPECIALTIES.reduce((highest, specialty) => Math.max(highest, specialty.id), 0) + 1;
 
   private nextId(): number {
     return this.all().reduce((highest, hospital) => Math.max(highest, hospital.id), 0) + 1;

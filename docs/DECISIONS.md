@@ -1130,6 +1130,57 @@ A registered hospital starts with no departments, facilities or opening hours,
 because the form does not collect them, and doctorCount 0, because that is derived
 from doctors' practices (ADR-025) rather than set here.
 
+---
+
+## ADR-036
+
+Decision
+
+Operational information — opening hours, departments, facilities — is managed on
+a separate page at /admin/hospitals/:id/manage, not on the registration form.
+
+Reason
+
+Registration answers "does this hospital exist and where is it", which an
+administrator can complete from a phone call. Operational detail answers "what
+does it do and when", which usually needs someone at the hospital to confirm. Two
+questions, two moments, and forcing them into one form would mean an admin either
+guesses or abandons the registration.
+
+Keeping them apart also keeps registration honest about what is required: name
+and city, and nothing else (ADR-035). A hospital exists as soon as it is known to
+exist, and its profile is completed incrementally as facts arrive — the same
+reason Save is one button per page rather than one per section.
+
+The management page is the only place these three lists can be edited. Hospital
+editing beyond them is out of scope.
+
+Departments are Specialties
+
+Hospital.departments is Specialty[], and hospital search matches on it, so free
+text has to resolve to one. The service reuses an existing specialty when the
+name matches case-insensitively and mints an id only for a genuinely new name,
+which keeps a newly added "Neurologist" findable by the existing search rather
+than creating a second, unsearchable one.
+
+One interval per day
+
+The form edits seven days, each with a closed toggle and one interval, and stores
+each open day as its own OpeningHours entry with a single-day `days` array. The
+existing structure already expresses that, so the model did not change — a
+seeded 'Mon – Sat' window simply reads back as six rows.
+
+A consequence: saving re-writes those windows per day, so a hospital that was
+seeded with one grouped window will afterwards hold up to seven. Hospital Details
+renders them through the same label helper either way.
+
+Signals, not Reactive Forms
+
+Registration uses a FormGroup because it is a fixed field set (ADR-035). This page
+is two lists and seven toggles, which a FormGroup would fight, so it edits local
+signals and writes to the service only on Save. That is what makes Cancel a real
+discard rather than an undo.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery
