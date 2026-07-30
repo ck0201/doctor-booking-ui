@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { roleGuard } from '@core/guards/auth.guard';
 import { Landing } from './features/landing/landing';
 
 export const routes: Routes = [
@@ -27,8 +28,20 @@ export const routes: Routes = [
   },
   {
     // Doctor-facing area; currently just the dashboard (ADR-019, ADR-029).
+    // Guarded at the parent, so every doctor page is covered by one rule (ADR-033).
     path: 'doctor',
+    canActivate: [roleGuard('doctor')],
     loadChildren: () => import('@features/doctor-dashboard/doctor-dashboard.routes'),
+  },
+  {
+    path: 'admin',
+    canActivate: [roleGuard('admin')],
+    loadChildren: () => import('@features/admin/admin.routes'),
+  },
+  {
+    // Sign-in flow: /login and /verify-otp (ADR-033).
+    path: '',
+    loadChildren: () => import('@features/auth/auth.routes'),
   },
   {
     path: '**',

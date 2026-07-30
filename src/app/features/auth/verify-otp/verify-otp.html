@@ -1,0 +1,64 @@
+<section class="auth-page">
+  <div class="card">
+    @if (hasNoRequest()) {
+      <h1>Nothing to verify</h1>
+      <p class="muted">Start by entering your mobile number.</p>
+      <a class="btn btn--primary submit" routerLink="/login" data-testid="back-to-login">
+        Back to sign in
+      </a>
+    } @else {
+      <h1>Verify your number</h1>
+
+      @if (phoneNumber(); as phone) {
+        <p class="muted">
+          Enter the code sent to <strong data-testid="phone">{{ phone }}</strong
+          >. Use <strong>123456</strong> for this demo.
+        </p>
+      } @else {
+        <p class="muted">Code accepted. Choose how you want to continue.</p>
+      }
+
+      @if (!isVerified()) {
+        <form (submit)="$event.preventDefault(); verify()">
+          <label class="field-label" for="otp">One-time code</label>
+          <input
+            class="form-control"
+            id="otp"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            autocomplete="one-time-code"
+            placeholder="6-digit code"
+            data-testid="otp-input"
+            [value]="code()"
+            [attr.aria-invalid]="error() ? 'true' : null"
+            (input)="code.set($any($event.target).value)"
+          />
+
+          <button class="btn btn--primary submit" type="submit" data-testid="verify-otp">
+            Verify
+          </button>
+        </form>
+      } @else {
+        <div class="roles" data-testid="role-selector">
+          <p class="field-label">Continue as</p>
+
+          @for (role of roles; track role) {
+            <button
+              class="btn btn--ghost role"
+              type="button"
+              [attr.data-testid]="'role-' + role"
+              (click)="chooseRole(role)"
+            >
+              {{ roleLabels[role] }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (error(); as message) {
+        <p class="field-error" role="alert" data-testid="otp-error">{{ message }}</p>
+      }
+    }
+  </div>
+</section>

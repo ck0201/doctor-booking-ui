@@ -4,7 +4,7 @@
   </div>
 
   <ul class="links">
-    @for (link of links; track link.route) {
+    @for (link of links(); track link.route) {
       <li>
         <a
           class="link"
@@ -15,6 +15,14 @@
         >
           {{ link.label }}
         </a>
+      </li>
+    }
+
+    @if (isAuthenticated()) {
+      <li>
+        <button class="link link--action" type="button" data-testid="logout" (click)="logout()">
+          Logout
+        </button>
       </li>
     }
   </ul>

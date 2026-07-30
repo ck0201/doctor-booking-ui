@@ -103,7 +103,7 @@ ADR-026.
 
 ### Authentication & Dashboards
 
-⬜ Authentication (OTP)
+✅ Authentication (Mock OTP) — /login, /verify-otp, role guards — ADR-033
 
 ⬜ Patient Dashboard
 
@@ -120,6 +120,8 @@ Availability toggle is local and unsaved. Not wired to the booking flow.
 ### Administration
 
 ⬜ Admin Portal
+
+`/admin` exists as a guarded placeholder only (ADR-033).
 
 ⬜ Reporting
 

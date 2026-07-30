@@ -985,6 +985,58 @@ Still feature-local. Hospital Details renders its own header rather than a card,
 so the search page is still HospitalCard's only consumer and the two-consumer
 rule from ADR-024 is not yet met.
 
+---
+
+## ADR-033
+
+Decision
+
+Mock authentication in AuthService, in-memory only. Two lazy routes (/login,
+/verify-otp), an authGuard and a roleGuard factory, and role-based navbar links.
+Fixed OTP 123456.
+
+Reason
+
+The application needed role-based access without a backend. Signals hold the
+session, so the navbar and the guards read the same source with no store and no
+event bus. Nothing is written to localStorage, sessionStorage or a cookie —
+asserted by a test — so a refresh signs the user out. That is the honest
+consequence of not persisting, not an oversight.
+
+Three-step handshake
+
+requestOtp → verifyOtp → loginAs, and each step refuses to skip its predecessor:
+verifyOtp answers 'no-request' if no code was asked for, and loginAs returns
+false unless a code was verified. Without that last check the role selector
+would itself be a way in.
+
+Guards
+
+authGuard sends unauthenticated users to /login with the attempted URL as
+?redirect=, so they resume where they were going rather than landing on a
+default page.
+
+roleGuard(...roles) sends a signed-in user with the wrong role to their own home,
+not to /login. They are authenticated but not entitled, and returning them to a
+sign-in form they already completed reads as a broken app.
+
+Both guards sit on the parent route (/doctor, /admin), so every child is covered
+by one rule and a new page under either cannot be added unprotected by accident.
+
+Navbar
+
+Reads the role from AuthService and picks from a table of link sets. Still no
+feature imports, no state of its own, and highlighting is still RouterLinkActive
+(ADR-030). Logout is a button styled as a link, because it is an action rather
+than a destination. Hospitals was added to the public set, which had been missing
+since ADR-031.
+
+Admin placeholder
+
+/admin is the admin role's home and the subject of a guard, so the route must
+exist or that redirect would bounce off the wildcard. features/admin holds a
+placeholder page; the portal itself is a later phase.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

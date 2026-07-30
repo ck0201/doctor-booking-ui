@@ -51,6 +51,14 @@
     color 0.15s ease;
 }
 
+/* Logout is an action, not a destination, so it is a button styled as a link. */
+.link--action {
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
 .link:hover {
   background: var(--color-primary-soft);
   color: var(--color-primary-dark);
