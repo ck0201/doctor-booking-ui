@@ -53,4 +53,7 @@ export interface Hospital extends HospitalCardData {
   readonly description: string;
   readonly facilities: readonly string[];
   readonly contactNumber: string;
+  /** Collected at registration; the seeded mocks do not carry these. */
+  readonly email?: string;
+  readonly website?: string;
 }

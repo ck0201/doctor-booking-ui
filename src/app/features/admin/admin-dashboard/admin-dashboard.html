@@ -16,7 +16,7 @@
   </ul>
 
   <app-profile-section title="Doctors">
-    @if (doctors.length) {
+    @if (doctors().length) {
       <div class="table-scroll">
         <table class="table" data-testid="doctors-table">
           <thead>
@@ -30,7 +30,7 @@
           </thead>
 
           <tbody>
-            @for (doctor of doctors; track doctor.id) {
+            @for (doctor of doctors(); track doctor.id) {
               <tr [attr.data-testid]="'doctor-row-' + doctor.id">
                 <th scope="row">{{ doctor.name }}</th>
                 <td>{{ doctor.primarySpecialty.name }}</td>
@@ -76,7 +76,17 @@
   </app-profile-section>
 
   <app-profile-section title="Hospitals">
-    @if (hospitals.length) {
+    <div class="section-actions">
+      <a
+        class="btn btn--primary btn--sm"
+        routerLink="/admin/hospitals/new"
+        data-testid="register-hospital"
+      >
+        Register Hospital
+      </a>
+    </div>
+
+    @if (hospitals().length) {
       <div class="table-scroll">
         <table class="table" data-testid="hospitals-table">
           <thead>
@@ -90,7 +100,7 @@
           </thead>
 
           <tbody>
-            @for (hospital of hospitals; track hospital.id) {
+            @for (hospital of hospitals(); track hospital.id) {
               <tr [attr.data-testid]="'hospital-row-' + hospital.id">
                 <th scope="row">{{ hospital.name }}</th>
                 <td>{{ hospital.address.city.name }}</td>
@@ -118,7 +128,7 @@
   </app-profile-section>
 
   <app-profile-section title="Appointments">
-    @if (appointments.length) {
+    @if (appointments().length) {
       <div class="table-scroll">
         <table class="table" data-testid="appointments-table">
           <thead>
@@ -133,7 +143,7 @@
           </thead>
 
           <tbody>
-            @for (appointment of appointments; track appointment.reference) {
+            @for (appointment of appointments(); track appointment.reference) {
               <tr [attr.data-testid]="'appointment-row-' + appointment.reference">
                 <!-- History is the patient's own, so the reference identifies them here. -->
                 <th scope="row">{{ appointment.reference }}</th>

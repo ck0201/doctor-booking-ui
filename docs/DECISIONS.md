@@ -1081,6 +1081,55 @@ Appointment rows show the reference in the patient column, because the mock
 history is a single patient's and carries no patient name. Worth revisiting when
 appointments belong to identifiable patients.
 
+---
+
+## ADR-035
+
+Decision
+
+Hospitals are registered by an administrator at /admin/hospitals/new, behind the
+existing admin role guard. There is no public or self-service hospital
+registration.
+
+Reason
+
+A hospital listing is a claim patients act on: they choose where to take a sick
+child from the name, the departments and the rating shown. Anyone who could
+self-register could publish that claim unverified, and the application has no way
+to check a registration number, an address or an ownership document — the
+Registration fields on a doctor exist precisely because credentials are supposed
+to be verifiable.
+
+Admin-controlled registration keeps a human between a submission and a public
+listing. It also matches where the data already comes from: hospitals are
+referenced by doctors' practices and counted into the search, so an unvetted row
+would immediately affect other features' figures.
+
+Self-service would need an approval state (draft, pending, published), a claim
+flow proving someone represents the hospital, and an audit trail. All three are
+out of scope, and none of them makes sense before a backend exists.
+
+Reactive Forms here, signals elsewhere
+
+The only ReactiveFormsModule page in the app. Eight fields with cross-field
+validation is where a FormGroup earns its keep; the search panels stay
+signal-bound, which ADR-011 left room for. City is a SearchableDropdown, not free
+text, because HospitalAddress holds a real City and derives its district from it —
+the dropdown's selection is mirrored into a cityId control rather than
+implementing ControlValueAccessor, so the shared component was not modified.
+
+Storage
+
+HospitalService now holds its list in a signal seeded from the mock, and all
+internal reads go through it, so a registered hospital is immediately visible to
+getById, search, searchByText and the admin dashboard. In memory only, like the
+session in ADR-033: a refresh restores the mock. The id continues the mock's
+sequence, so it cannot collide with a seeded one.
+
+A registered hospital starts with no departments, facilities or opening hours,
+because the form does not collect them, and doctorCount 0, because that is derived
+from doctors' practices (ADR-025) rather than set here.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

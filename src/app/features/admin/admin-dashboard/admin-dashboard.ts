@@ -38,9 +38,10 @@ export class AdminDashboard {
 
   readonly user = this.auth.currentUser;
 
-  readonly doctors = this.admin.getDoctors();
-  readonly hospitals = this.admin.getHospitals();
-  readonly appointments = this.admin.getAppointments();
+  readonly doctors = computed(() => this.admin.getDoctors());
+  /** Computed, so a hospital registered by an admin appears at once (ADR-035). */
+  readonly hospitals = computed(() => this.admin.getHospitals());
+  readonly appointments = computed(() => this.admin.getAppointments());
 
   /** Doctor ids an admin has disabled in this session. Never persisted. */
   private readonly disabledDoctorIds = signal<ReadonlySet<number>>(new Set());
@@ -65,7 +66,7 @@ export class AdminDashboard {
 
   /** Reflects the local overrides, so disabling a doctor is visibly doing something. */
   readonly activeDoctorCount = computed(
-    () => this.doctors.filter((doctor) => this.isActive(doctor)).length,
+    () => this.doctors().filter((doctor) => this.isActive(doctor)).length,
   );
 
   isEnabled(doctor: DoctorCardData): boolean {

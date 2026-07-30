@@ -123,6 +123,8 @@ Availability toggle is local and unsaved. Not wired to the booking flow.
 
 Summary cards, doctor/hospital/appointment tables, mock actions only.
 
+✅ Hospital Registration — `/admin/hospitals/new`, admin only — ADR-035
+
 ⬜ Reporting
 
 ⬜ Analytics

@@ -93,6 +93,10 @@
   gap: 8px;
 }
 
+.section-actions {
+  margin-bottom: 14px;
+}
+
 .btn--sm {
   height: 32px;
   padding: 0 12px;

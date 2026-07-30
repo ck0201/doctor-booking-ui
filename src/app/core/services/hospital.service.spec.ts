@@ -377,3 +377,132 @@ describe('HospitalService', () => {
     });
   });
 });
+
+describe('HospitalService.addHospital', () => {
+  let service: HospitalService;
+  let locations: LocationService;
+
+  const deoria = () => locations.getCities(1)[0];
+
+  beforeEach(() => {
+    service = TestBed.inject(HospitalService);
+    locations = TestBed.inject(LocationService);
+  });
+
+  it('adds the hospital to the list', () => {
+    const before = service.getHospitals().length;
+
+    const created = service.addHospital({ name: 'New Care Clinic', city: deoria() });
+
+    expect(service.getHospitals().length).toBe(before + 1);
+    expect(service.getHospitals()).toContain(created);
+  });
+
+  it('preserves every existing hospital', () => {
+    const before = [...service.getHospitals()];
+
+    service.addHospital({ name: 'New Care Clinic', city: deoria() });
+
+    for (const hospital of before) {
+      expect(service.getHospitals()).toContain(hospital);
+    }
+  });
+
+  it('generates an id that does not collide with a seeded one', () => {
+    const highest = Math.max(...service.getHospitals().map((hospital) => hospital.id));
+
+    const created = service.addHospital({ name: 'New Care Clinic', city: deoria() });
+
+    expect(created.id).toBe(highest + 1);
+    expect(service.getById(created.id)).toBe(created);
+  });
+
+  it('keeps ids unique across several registrations', () => {
+    const created = [1, 2, 3].map((index) =>
+      service.addHospital({ name: `Clinic ${index}`, city: deoria() }),
+    );
+    const ids = service.getHospitals().map((hospital) => hospital.id);
+
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(new Set(created.map((hospital) => hospital.id)).size).toBe(3);
+  });
+
+  it('emits the updated list through the reactive view', () => {
+    const before = service.hospitals().length;
+
+    const created = service.addHospital({ name: 'New Care Clinic', city: deoria() });
+
+    expect(service.hospitals().length).toBe(before + 1);
+    expect(service.hospitals()).toContain(created);
+  });
+
+  it('trims the name and the optional text', () => {
+    const created = service.addHospital({
+      name: '  New Care Clinic  ',
+      city: deoria(),
+      addressLine: '  Station Road  ',
+      description: '  A clinic.  ',
+      contactNumber: '  +91 5568 100200  ',
+    });
+
+    expect(created.name).toBe('New Care Clinic');
+    expect(created.address.line).toBe('Station Road');
+    expect(created.description).toBe('A clinic.');
+    expect(created.contactNumber).toBe('+91 5568 100200');
+  });
+
+  it('derives the district from the city', () => {
+    const salempur = locations.getCities(1).find((city) => city.name === 'Salempur')!;
+
+    const created = service.addHospital({ name: 'New Care Clinic', city: salempur });
+
+    expect(created.address.city).toBe(salempur);
+    expect(created.address.district.id).toBe(salempur.districtId);
+  });
+
+  it('records a rating with no reviews, or none at all', () => {
+    const rated = service.addHospital({ name: 'Rated', city: deoria(), rating: 4.5 });
+    const unrated = service.addHospital({ name: 'Unrated', city: deoria() });
+
+    expect(rated.rating).toEqual({ value: 4.5, reviewCount: 0 });
+    expect(unrated.rating).toBeUndefined();
+  });
+
+  it('keeps email and website only when given', () => {
+    const withContact = service.addHospital({
+      name: 'With Contact',
+      city: deoria(),
+      email: 'hello@clinic.test',
+      website: 'https://clinic.test',
+    });
+    const without = service.addHospital({
+      name: 'Without',
+      city: deoria(),
+      email: '',
+      website: '',
+    });
+
+    expect(withContact.email).toBe('hello@clinic.test');
+    expect(withContact.website).toBe('https://clinic.test');
+    expect(without.email).toBeUndefined();
+    expect(without.website).toBeUndefined();
+  });
+
+  it('starts with no departments, facilities, hours or doctors', () => {
+    const created = service.addHospital({ name: 'New Care Clinic', city: deoria() });
+
+    expect(created.departments).toEqual([]);
+    expect(created.facilities).toEqual([]);
+    expect(created.openingHours).toEqual([]);
+    expect(created.isOpen24Hours).toBe(false);
+    expect(created.doctorCount).toBe(0);
+  });
+
+  it('is findable by the text search straight away', () => {
+    service.addHospital({ name: 'Unique Name Clinic', city: deoria() });
+
+    expect(service.searchByText('unique name').map((hospital) => hospital.name)).toEqual([
+      'Unique Name Clinic',
+    ]);
+  });
+});

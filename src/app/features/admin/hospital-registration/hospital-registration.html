@@ -1,0 +1,141 @@
+<section class="registration-page">
+  <header class="page-header">
+    <h1>Register Hospital</h1>
+    <p class="muted">Only a name and city are required. Everything else can follow later.</p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <app-profile-section title="Hospital details">
+      <div class="fields">
+        <div class="field">
+          <label class="field-label" for="name">Hospital Name *</label>
+          <input
+            class="form-control"
+            id="name"
+            type="text"
+            formControlName="name"
+            data-testid="name-input"
+            [attr.aria-invalid]="showError('name', 'required') ? 'true' : null"
+          />
+          @if (showError('name', 'required')) {
+            <p class="field-error" data-testid="name-error">Enter the hospital name</p>
+          }
+        </div>
+
+        <div class="field">
+          <app-searchable-dropdown
+            label="City *"
+            placeholder="Select a city"
+            emptyMessage="No city found"
+            [items]="cities"
+            [value]="selectedCity()"
+            (valueChange)="onCitySelected($event)"
+          />
+          @if (showError('cityId', 'required')) {
+            <p class="field-error" data-testid="city-error">Select a city</p>
+          }
+        </div>
+
+        <div class="field field--wide">
+          <label class="field-label" for="addressLine">Address</label>
+          <input
+            class="form-control"
+            id="addressLine"
+            type="text"
+            formControlName="addressLine"
+            data-testid="address-input"
+          />
+        </div>
+
+        <div class="field field--wide">
+          <label class="field-label" for="description">Description</label>
+          <textarea
+            class="form-control form-control--area"
+            id="description"
+            rows="3"
+            formControlName="description"
+            data-testid="description-input"
+          ></textarea>
+        </div>
+      </div>
+    </app-profile-section>
+
+    <app-profile-section title="Contact">
+      <div class="fields">
+        <div class="field">
+          <label class="field-label" for="contactNumber">Phone Number</label>
+          <input
+            class="form-control"
+            id="contactNumber"
+            type="tel"
+            formControlName="contactNumber"
+            data-testid="phone-input"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="email">Email</label>
+          <input
+            class="form-control"
+            id="email"
+            type="email"
+            formControlName="email"
+            data-testid="email-input"
+            [attr.aria-invalid]="showError('email', 'email') ? 'true' : null"
+          />
+          @if (showError('email', 'email')) {
+            <p class="field-error" data-testid="email-error">Enter a valid email address</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="website">Website</label>
+          <input
+            class="form-control"
+            id="website"
+            type="url"
+            placeholder="https://example.com"
+            formControlName="website"
+            data-testid="website-input"
+            [attr.aria-invalid]="showError('website', 'url') ? 'true' : null"
+          />
+          @if (showError('website', 'url')) {
+            <p class="field-error" data-testid="website-error">
+              Enter a full URL, starting with https://
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="rating">Rating</label>
+          <input
+            class="form-control"
+            id="rating"
+            type="number"
+            min="0"
+            max="5"
+            step="0.1"
+            formControlName="rating"
+            data-testid="rating-input"
+            [attr.aria-invalid]="
+              showError('rating', 'min') || showError('rating', 'max') ? 'true' : null
+            "
+          />
+          @if (showError('rating', 'min') || showError('rating', 'max')) {
+            <p class="field-error" data-testid="rating-error">Enter a rating between 0 and 5</p>
+          }
+        </div>
+      </div>
+    </app-profile-section>
+
+    <div class="actions">
+      <button class="btn btn--primary" type="submit" data-testid="save" [disabled]="!canSave()">
+        Save
+      </button>
+
+      <button class="btn btn--ghost" type="button" data-testid="cancel" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</section>

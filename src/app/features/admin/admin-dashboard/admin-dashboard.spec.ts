@@ -139,9 +139,9 @@ describe('AdminDashboard', () => {
         `${summary.totalAppointments}`,
         `${page.activeDoctorCount()}`,
       ]);
-      expect(summary.totalDoctors).toBe(page.doctors.length);
-      expect(summary.totalHospitals).toBe(page.hospitals.length);
-      expect(summary.totalAppointments).toBe(page.appointments.length);
+      expect(summary.totalDoctors).toBe(page.doctors().length);
+      expect(summary.totalHospitals).toBe(page.hospitals().length);
+      expect(summary.totalAppointments).toBe(page.appointments().length);
     });
 
     it('reuses the promoted stat card', async () => {
@@ -162,7 +162,7 @@ describe('AdminDashboard', () => {
     it('lists every doctor with specialty, hospital and status', async () => {
       const page = await open();
 
-      expect(queryAll('[data-testid="doctors-table"] tbody tr').length).toBe(page.doctors.length);
+      expect(queryAll('[data-testid="doctors-table"] tbody tr').length).toBe(page.doctors().length);
       expect(text()).toContain('Dr. Asha Verma');
       expect(text()).toContain('Cardiologist');
       expect(text()).toContain('Sanjeevani Heart Centre');
@@ -171,14 +171,14 @@ describe('AdminDashboard', () => {
 
     it('shows a dash when a doctor has no listed practice', async () => {
       const page = await open();
-      const withoutPractice = page.doctors.find((doctor) => !doctor.practice);
+      const withoutPractice = page.doctors().find((doctor) => !doctor.practice);
 
-      expect(page.hospitalName(withoutPractice ?? page.doctors[0])).toBeTruthy();
+      expect(page.hospitalName(withoutPractice ?? page.doctors()[0])).toBeTruthy();
     });
 
     it('reflects a doctor who is not available today', async () => {
       const page = await open();
-      const unavailable = page.doctors.find((doctor) => !doctor.availability?.isAvailableToday)!;
+      const unavailable = page.doctors().find((doctor) => !doctor.availability?.isAvailableToday)!;
 
       expect(testId(`doctor-status-${unavailable.id}`)?.textContent?.trim()).toBe('Unavailable');
     });
@@ -225,8 +225,13 @@ describe('AdminDashboard', () => {
 
       await click('doctor-toggle-1');
 
-      expect(page.isEnabled(page.doctors[0])).toBe(false);
-      expect(page.doctors.slice(1).every((doctor) => page.isEnabled(doctor))).toBe(true);
+      expect(page.isEnabled(page.doctors()[0])).toBe(false);
+      expect(
+        page
+          .doctors()
+          .slice(1)
+          .every((doctor) => page.isEnabled(doctor)),
+      ).toBe(true);
     });
 
     it('changes nothing in the service, since nothing is persisted', async () => {
@@ -237,7 +242,7 @@ describe('AdminDashboard', () => {
       expect(admin.getSummary().activeDoctors).toBe(
         admin.getDoctors().filter((doctor) => admin.isDoctorAvailable(doctor)).length,
       );
-      expect(page.doctors[0].availability?.isAvailableToday).toBe(true);
+      expect(page.doctors()[0].availability?.isAvailableToday).toBe(true);
     });
   });
 
@@ -246,7 +251,7 @@ describe('AdminDashboard', () => {
       const page = await open();
 
       expect(queryAll('[data-testid="hospitals-table"] tbody tr').length).toBe(
-        page.hospitals.length,
+        page.hospitals().length,
       );
       expect(text()).toContain('Drishti Eye Hospital');
       expect(text()).toContain('Sahjanwa');
@@ -270,7 +275,7 @@ describe('AdminDashboard', () => {
     it('lists every appointment with doctor, hospital, date and status', async () => {
       const page = await open();
 
-      expect(queryAll('[data-testid^="appointment-row-"]').length).toBe(page.appointments.length);
+      expect(queryAll('[data-testid^="appointment-row-"]').length).toBe(page.appointments().length);
       expect(text()).toContain('APT-2026-0009');
       expect(text()).toContain('Dr. Asha Verma');
       expect(text()).toContain('Fri 14 Aug 2026');
@@ -280,7 +285,7 @@ describe('AdminDashboard', () => {
     it('formats the date through the shared util', async () => {
       const page = await open();
 
-      expect(page.appointmentDate(page.appointments[0])).toMatch(/^\w{3} \d{1,2} \w{3} \d{4}$/);
+      expect(page.appointmentDate(page.appointments()[0])).toMatch(/^\w{3} \d{1,2} \w{3} \d{4}$/);
     });
 
     it('shows a detail line when View is used, and hides it again', async () => {
