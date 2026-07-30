@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DoctorService } from './doctor.service';
+import { HospitalService } from './hospital.service';
 import { LocationService } from './location.service';
 import { DoctorSearchCriteria } from '../models/doctor-search-criteria.model';
 import { Doctor, DoctorCardData } from '../models/doctor.model';
@@ -312,5 +313,89 @@ describe('DoctorService', () => {
         }
       }
     });
+  });
+});
+
+describe('DoctorService.addDoctor', () => {
+  let service: DoctorService;
+  let hospitals: HospitalService;
+
+  const draft = (overrides: Partial<Parameters<DoctorService['addDoctor']>[0]> = {}) => {
+    const hospital = hospitals.getById(1)!;
+    return {
+      name: 'Dr. New Doctor',
+      specialty: hospital.departments[0],
+      hospital,
+      isAvailableToday: true,
+      ...overrides,
+    };
+  };
+
+  beforeEach(() => {
+    service = TestBed.inject(DoctorService);
+    hospitals = TestBed.inject(HospitalService);
+  });
+
+  it('adds the doctor with an id that continues the sequence', () => {
+    const highest = Math.max(...service.getDoctors().map((doctor) => doctor.id));
+
+    const created = service.addDoctor(draft());
+
+    expect(created.id).toBe(highest + 1);
+    expect(service.getById(created.id)).toBe(created);
+  });
+
+  it('assigns the doctor to the selected hospital and specialty', () => {
+    const hospital = hospitals.getById(1)!;
+
+    const created = service.addDoctor(draft());
+
+    expect(created.primarySpecialty).toBe(hospital.departments[0]);
+    expect(created.practices[0].hospitalId).toBe(hospital.id);
+    expect(created.practice?.city).toBe(hospital.address.city);
+    expect(service.getByHospital(hospital.id)).toContain(created);
+  });
+
+  it('trims the name and keeps optional fields only when given', () => {
+    const created = service.addDoctor(
+      draft({ name: '  Dr. New Doctor  ', qualifications: '  MBBS  ', email: '' }),
+    );
+
+    expect(created.name).toBe('Dr. New Doctor');
+    expect(created.qualifications).toBe('MBBS');
+    expect(created.email).toBeUndefined();
+  });
+
+  it('records availability and leaves unverifiable detail empty', () => {
+    const created = service.addDoctor(draft({ isAvailableToday: false }));
+
+    expect(created.availability).toEqual({ isAvailableToday: false });
+    expect(created.education).toEqual([]);
+    expect(created.registrations).toEqual([]);
+    expect(created.reviews).toEqual([]);
+    expect(created.rating).toBeUndefined();
+  });
+
+  it('is immediately visible to search and the reactive view', () => {
+    const created = service.addDoctor(draft({ name: 'Dr. Unique Person' }));
+
+    expect(service.doctors()).toContain(created);
+    expect(
+      service.search({
+        doctorName: 'unique person',
+        specialty: null,
+        state: TestBed.inject(LocationService).launchState,
+        district: null,
+        city: null,
+      }),
+    ).toEqual([created]);
+  });
+
+  it('moves the hospital doctor count it was assigned to', () => {
+    const before = hospitals.getById(1)!.doctorCount;
+
+    service.addDoctor(draft());
+
+    expect(hospitals.getById(1)!.doctorCount).toBe(before + 1);
   });
 });

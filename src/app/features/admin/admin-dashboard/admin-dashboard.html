@@ -16,6 +16,16 @@
   </ul>
 
   <app-profile-section title="Doctors">
+    <div class="section-actions">
+      <a
+        class="btn btn--primary btn--sm"
+        routerLink="/admin/doctors/new"
+        data-testid="register-doctor"
+      >
+        Register Doctor
+      </a>
+    </div>
+
     @if (doctors().length) {
       <div class="table-scroll">
         <table class="table" data-testid="doctors-table">

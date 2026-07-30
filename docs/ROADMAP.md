@@ -129,6 +129,8 @@ Summary cards, doctor/hospital/appointment tables, mock actions only.
 
 Opening hours, departments and facilities. Admin only.
 
+✅ Doctor Registration — `/admin/doctors/new`, specialty scoped to the hospital — ADR-037
+
 ⬜ Reporting
 
 ⬜ Analytics

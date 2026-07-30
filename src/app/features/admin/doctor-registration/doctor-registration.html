@@ -1,0 +1,163 @@
+<section class="registration-page">
+  <header class="page-header">
+    <h1>Register Doctor</h1>
+    <p class="muted">A doctor is assigned to one hospital and one of its departments.</p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <app-profile-section title="Basic information">
+      <div class="fields">
+        <div class="field">
+          <label class="field-label" for="name">Doctor Name *</label>
+          <input
+            class="form-control"
+            id="name"
+            type="text"
+            formControlName="name"
+            data-testid="name-input"
+          />
+          @if (showError('name', 'required')) {
+            <p class="field-error" data-testid="name-error">Enter the doctor’s name</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="hospital">Hospital *</label>
+          <select
+            class="form-control"
+            id="hospital"
+            data-testid="hospital-select"
+            (change)="onHospitalChange($any($event.target).value)"
+          >
+            <option value="">Select a hospital</option>
+            @for (hospital of hospitals(); track hospital.id) {
+              <option [value]="hospital.id">{{ hospital.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="specialty">Specialty *</label>
+          <select
+            class="form-control"
+            id="specialty"
+            formControlName="specialtyId"
+            data-testid="specialty-select"
+          >
+            <option [ngValue]="null">Select a specialty</option>
+            @for (department of departments(); track department.id) {
+              <option [ngValue]="department.id">{{ department.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="experienceYears">Experience (Years)</label>
+          <input
+            class="form-control"
+            id="experienceYears"
+            type="number"
+            min="0"
+            step="1"
+            formControlName="experienceYears"
+            data-testid="experience-input"
+          />
+          @if (showError('experienceYears', 'min')) {
+            <p class="field-error" data-testid="experience-error">Experience cannot be negative</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="qualifications">Qualification</label>
+          <input
+            class="form-control"
+            id="qualifications"
+            type="text"
+            placeholder="MBBS, MD"
+            formControlName="qualifications"
+            data-testid="qualifications-input"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="consultationFee">Consultation Fee</label>
+          <input
+            class="form-control"
+            id="consultationFee"
+            type="number"
+            min="1"
+            formControlName="consultationFee"
+            data-testid="fee-input"
+          />
+          @if (showError('consultationFee', 'min')) {
+            <p class="field-error" data-testid="fee-error">Fee must be greater than zero</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contactNumber">Phone</label>
+          <input
+            class="form-control"
+            id="contactNumber"
+            type="tel"
+            formControlName="contactNumber"
+            data-testid="phone-input"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="email">Email</label>
+          <input
+            class="form-control"
+            id="email"
+            type="email"
+            formControlName="email"
+            data-testid="email-input"
+          />
+          @if (showError('email', 'email')) {
+            <p class="field-error" data-testid="email-error">Enter a valid email address</p>
+          }
+        </div>
+
+        <div class="field field--wide">
+          <label class="field-label" for="biography">Biography</label>
+          <textarea
+            class="form-control form-control--area"
+            id="biography"
+            rows="3"
+            formControlName="biography"
+            data-testid="biography-input"
+          ></textarea>
+        </div>
+      </div>
+
+      @if (hasNoDepartments()) {
+        <app-empty-state
+          class="no-departments"
+          data-testid="no-departments"
+          title="No departments yet"
+        >
+          {{ selectedHospital()!.name }} has no departments configured, so a doctor cannot be
+          assigned to it. Add departments on the hospital’s management page first.
+        </app-empty-state>
+      }
+    </app-profile-section>
+
+    <app-profile-section title="Availability">
+      <label class="checkbox">
+        <input type="checkbox" formControlName="isAvailableToday" data-testid="available-input" />
+        Available today
+      </label>
+    </app-profile-section>
+
+    <div class="actions">
+      <button class="btn btn--primary" type="submit" data-testid="save" [disabled]="!canSave()">
+        Save
+      </button>
+
+      <button class="btn btn--ghost" type="button" data-testid="cancel" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</section>

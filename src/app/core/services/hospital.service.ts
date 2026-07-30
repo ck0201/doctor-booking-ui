@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Hospital, HospitalCardData, OpeningHours, Weekday } from '../models/hospital.model';
 import { HospitalSearchCriteria } from '../models/hospital-search-criteria.model';
 import { City, District } from '../models/location.model';
@@ -6,6 +6,7 @@ import { Specialty } from '../models/specialty.model';
 import { DISTRICTS } from '@mock-data/locations.mock';
 import { SPECIALTIES } from '@mock-data/specialties.mock';
 import { HOSPITALS } from '@mock-data/hospitals.mock';
+import { DoctorService } from './doctor.service';
 
 /**
  * Single access point for hospital data.
@@ -51,11 +52,27 @@ export class HospitalService {
    */
   private readonly store = signal<readonly Hospital[]>(HOSPITALS);
 
+  private readonly doctorService = inject(DoctorService);
+
+  /**
+   * The stored hospitals with doctorCount recomputed from the doctors who list a
+   * practice there (ADR-025). Derived at read time rather than stored, so a
+   * doctor registered by an admin moves every count at once (ADR-037).
+   *
+   * A computed, so repeated reads keep object identity until something changes.
+   */
+  private readonly view = computed<readonly Hospital[]>(() =>
+    this.store().map((hospital) => {
+      const doctorCount = this.doctorService.getByHospital(hospital.id).length;
+      return doctorCount === hospital.doctorCount ? hospital : { ...hospital, doctorCount };
+    }),
+  );
+
   /** Reactive view for pages that must follow additions. */
-  readonly hospitals = computed<readonly HospitalCardData[]>(() => this.store());
+  readonly hospitals = computed<readonly HospitalCardData[]>(() => this.view());
 
   private all(): readonly Hospital[] {
-    return this.store();
+    return this.view();
   }
 
   /**

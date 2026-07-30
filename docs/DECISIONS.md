@@ -1181,6 +1181,50 @@ is two lists and seven toggles, which a FormGroup would fight, so it edits local
 signals and writes to the service only on Save. That is what makes Cancel a real
 discard rather than an undo.
 
+---
+
+## ADR-037
+
+Decision
+
+A doctor is registered by an administrator at /admin/doctors/new against one
+hospital, and their specialty is chosen from that hospital's configured
+departments rather than typed freely.
+
+Reason
+
+The specialty is not a label on the doctor; it is the claim that this hospital
+provides this care through this person. Free text would let the two disagree —
+a cardiologist assigned to a hospital that runs no cardiology — and a patient
+filtering hospitals by department would find one whose only cardiologist is not
+reachable through it.
+
+Free text would also mint orphan specialties. Doctor search filters by specialty
+id (ADR-016), so "Cardiology", "cardiology" and "Cardiologist" typed on three
+occasions would become three ids, none of which matches the seeded one, and each
+new doctor would quietly vanish from the search that should find them.
+
+Scoping the dropdown makes the invalid state unreachable rather than merely
+validated against, and it gives the two admin pages a deliberate order:
+a hospital's departments are configured first (ADR-036), then doctors are
+assigned to them. A hospital with no departments cannot take a doctor yet, and
+the form says so instead of silently offering an empty list.
+
+Derived doctor counts
+
+Hospital.doctorCount was baked into the mock at build time, so a newly registered
+doctor would not have moved it. HospitalService now recomputes it from
+DoctorService.getByHospital at read time, through a computed so repeated reads
+keep object identity. One direction only — Hospital reads Doctor, never the
+reverse — so there is no cycle, and every count (admin summary, hospital search,
+hospital details) follows a registration at once.
+
+What a registered doctor does not get
+
+Education, registrations, reviews, languages and ratings start empty. The form
+does not collect them, and inventing them would put unverifiable credentials on
+a public profile — the same reasoning as ADR-035.
+
 Future architectural decisions should be recorded here before implementation.
 
 ## ADR-026 — Prioritize Appointment Booking before Hospital Discovery

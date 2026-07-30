@@ -146,5 +146,8 @@ export interface Doctor extends DoctorCardData {
   readonly practices: readonly DoctorPracticeDetail[];
   /** The written subset of the ratings counted in rating.reviewCount. */
   readonly reviews: readonly DoctorReview[];
+  /** Collected at registration; the seeded mocks do not carry these. */
+  readonly contactNumber?: string;
+  readonly email?: string;
   readonly ratingBreakdown?: RatingBreakdown;
 }
