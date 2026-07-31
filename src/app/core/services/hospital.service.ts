@@ -29,6 +29,16 @@ export const MAX_FACILITIES = 30;
 /** The first hospital account code issued, continuing as HSP-100002 and so on. */
 export const HOSPITAL_CODE_START = 100001;
 
+/**
+ * The temporary password every mock hospital account is issued (ADR-038).
+ *
+ * Fixed, not random — the same call MOCK_OTP makes in ADR-033. It lives here
+ * rather than in either feature so the credentials screen that shows it and the
+ * hospital sign-in that checks it read one value, and neither depends on the
+ * other.
+ */
+export const TEMPORARY_PASSWORD = 'Temp@1234';
+
 /** The operational profile the management page owns (ADR-036). */
 export interface HospitalProfileUpdate {
   readonly openingHours: readonly OpeningHours[];

@@ -1,18 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HospitalService } from '@core/services/hospital.service';
+import { HospitalService, TEMPORARY_PASSWORD } from '@core/services/hospital.service';
 import { toRouteId } from '@core/utils/route-params';
 import { EmptyState } from '@shared/components/ui/empty-state/empty-state';
 import { ProfileSection } from '@shared/components/ui/profile-section/profile-section';
-
-/**
- * The temporary password every mock hospital account is issued.
- *
- * Fixed, not random — the same call MOCK_OTP makes in ADR-033. A demo needs a
- * value an admin can read out and a reviewer can predict, and a random string
- * here would imply a credential store that does not exist.
- */
-export const TEMPORARY_PASSWORD = 'Temp@1234';
 
 /**
  * Credential handover, the last step a platform admin performs (ADR-038).

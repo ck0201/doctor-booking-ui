@@ -137,7 +137,13 @@ Opening hours, departments and facilities. Admin only.
 
 ✅ Doctor Registration — `/admin/doctors/new`, specialty scoped to the hospital — ADR-037
 
-⬜ Hospital Portal — hospital admin signs in and completes its own profile — ADR-038
+✅ Hospital Login — `/hospital/login`, mock credential check — ADR-038
+
+Validates the email against hospitals registered in this session plus the issued
+temporary password, then lands on `/hospital/welcome`. No session, guard or role
+is established. `/hospital/welcome` is a placeholder for the next phase.
+
+⬜ Hospital Portal — profile completion after first sign-in — ADR-038
 
 The management page above is the interim, admin-only path until this exists.
 

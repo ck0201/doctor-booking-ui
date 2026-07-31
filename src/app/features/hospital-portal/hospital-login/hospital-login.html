@@ -1,0 +1,48 @@
+<section class="auth-page">
+  <div class="card">
+    <h1>Hospital Sign In</h1>
+    <p class="muted">Sign in to complete your hospital’s profile.</p>
+
+    <form (submit)="$event.preventDefault(); signIn()">
+      <label class="field-label" for="email">Email</label>
+      <input
+        class="form-control"
+        id="email"
+        type="email"
+        autocomplete="email"
+        data-testid="email-input"
+        [value]="email()"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        [attr.aria-describedby]="error() ? 'sign-in-error' : null"
+        (input)="setEmail($any($event.target).value)"
+      />
+
+      <label class="field-label field-label--spaced" for="password">Password</label>
+      <input
+        class="form-control"
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        data-testid="password-input"
+        [value]="password()"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        [attr.aria-describedby]="error() ? 'sign-in-error' : null"
+        (input)="setPassword($any($event.target).value)"
+      />
+
+      @if (error(); as message) {
+        <p class="field-error" id="sign-in-error" data-testid="sign-in-error" role="alert">
+          {{ message }}
+        </p>
+      }
+
+      <button class="btn btn--primary submit" type="submit" data-testid="sign-in">Sign In</button>
+    </form>
+
+    <p class="note">Use the credentials provided by the Platform Administrator.</p>
+
+    <p class="note">
+      <a data-testid="back-to-home" routerLink="/">Back to Home</a>
+    </p>
+  </div>
+</section>

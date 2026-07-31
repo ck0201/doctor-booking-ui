@@ -1313,8 +1313,10 @@ so there is nothing that can disagree with the contact address.
 
 The temporary password is the fixed constant `Temp@1234`, the same call ADR-033
 made with MOCK_OTP. A random string would imply a credential store, an expiry and
-a reset path — none of which exist. It is exported from the page so a future
-hospital sign-in can import the one value rather than restating it.
+a reset path — none of which exist. It now lives in HospitalService as
+TEMPORARY_PASSWORD, moved there when hospital sign-in became its second consumer:
+the screen that shows it and the form that checks it read one value, and the
+hospital portal does not import from the admin feature to get it.
 
 No User model, no authentication and no storage were introduced. The credentials
 are derived from hospital data at render time and exist nowhere else.
@@ -1334,6 +1336,24 @@ updating. Left alone deliberately — tests run as their own milestone.
 The management page at /admin/hospitals/:id/manage stays as it is and remains
 admin-only. It is the interim path to the operational profile until the hospital
 portal exists, which is a later phase and out of scope here.
+
+Hospital sign-in
+
+/hospital/login implements the entry point this decision described, as a lazy
+feature group (ADR-019) with /hospital/welcome as a placeholder. The credential
+check is local to the login component: it matches the email against the hospitals
+HospitalService holds and compares the password to TEMPORARY_PASSWORD. Nothing is
+written, so signing in establishes no session — the welcome page is reachable
+directly by URL, and that is the honest limit of a navigation-only phase.
+
+AuthService was not touched. Its roles are patient, doctor and admin, and its
+handshake is phone plus OTP (ADR-033); a hospital signs in with an email and an
+issued password, which is a different mechanism for a different subject. Adding a
+fourth role would have meant changing a finished feature to serve a mock that
+stores nothing.
+
+One error message covers both a wrong email and a wrong password, so the form does
+not confirm whether an account exists.
 
 ---
 

@@ -39,6 +39,13 @@ export const routes: Routes = [
     loadChildren: () => import('@features/admin/admin.routes'),
   },
   {
+    // Hospital-facing portal: /hospital/login, with /hospital/welcome reserved
+    // for the next phase (ADR-038). Unguarded — the sign-in is mocked in the page
+    // and no hospital session exists for a guard to read.
+    path: 'hospital',
+    loadChildren: () => import('@features/hospital-portal/hospital-portal.routes'),
+  },
+  {
     // Sign-in flow: /login and /verify-otp (ADR-033).
     path: '',
     loadChildren: () => import('@features/auth/auth.routes'),
