@@ -109,3 +109,7 @@ form {
     padding: 32px 24px 72px;
   }
 }
+
+select.form-control {
+  appearance: auto;
+}

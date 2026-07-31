@@ -1,0 +1,58 @@
+<section class="registered-page">
+  @if (hospital(); as hospital) {
+    <header class="page-header">
+      <p class="tick" aria-hidden="true">✓</p>
+
+      <h1 data-testid="headline">Hospital Registered Successfully</h1>
+
+      <p class="muted">
+        <strong data-testid="hospital-name">{{ hospital.name }}</strong> now has an account. Hand
+        these credentials to the hospital — they will sign in with them to complete their own
+        departments, facilities and opening hours.
+      </p>
+    </header>
+
+    <app-profile-section title="Account credentials">
+      <dl class="credentials">
+        <div class="credential">
+          <dt>Hospital ID</dt>
+          <dd data-testid="hospital-code">{{ hospital.hospitalCode }}</dd>
+        </div>
+
+        <div class="credential">
+          <dt>Username</dt>
+          <dd data-testid="username">{{ hospital.email }}</dd>
+        </div>
+
+        <div class="credential">
+          <dt>Temporary Password</dt>
+          <dd data-testid="temporary-password">{{ temporaryPassword }}</dd>
+        </div>
+      </dl>
+
+      <p class="note">
+        The password is temporary and shared for every mock account. Nothing is stored, emailed or
+        sent by SMS — this screen is the only place it appears.
+      </p>
+    </app-profile-section>
+
+    <div class="actions">
+      <!-- Interface only: no clipboard access is wired up in this phase. -->
+      <button class="btn btn--primary" type="button" data-testid="copy-credentials">
+        Copy Credentials
+      </button>
+
+      <a class="btn btn--ghost" data-testid="back-to-dashboard" routerLink="/admin">
+        Back to Admin Dashboard
+      </a>
+    </div>
+  } @else {
+    <app-empty-state class="not-found" data-testid="not-found" title="No credentials to show">
+      We could not find a registered hospital for
+      <strong data-testid="requested-id">{{ id() }}</strong
+      >. Registering a hospital issues its credentials once, and they are not stored.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/admin">Back to admin</a>
+    </app-empty-state>
+  }
+</section>

@@ -125,11 +125,21 @@ Summary cards, doctor/hospital/appointment tables, mock actions only.
 
 ✅ Hospital Registration — `/admin/hospitals/new`, admin only — ADR-035
 
+✅ Hospital Account Credentials — `/admin/hospitals/:id/registered` — ADR-038
+
+Hospital ID, username and temporary password handed to the platform admin. Copy
+Credentials is interface only; the credentials are not stored, so a refresh
+loses them.
+
 ✅ Hospital Profile Completion — `/admin/hospitals/:id/manage` — ADR-036
 
 Opening hours, departments and facilities. Admin only.
 
 ✅ Doctor Registration — `/admin/doctors/new`, specialty scoped to the hospital — ADR-037
+
+⬜ Hospital Portal — hospital admin signs in and completes its own profile — ADR-038
+
+The management page above is the interim, admin-only path until this exists.
 
 ⬜ Reporting
 

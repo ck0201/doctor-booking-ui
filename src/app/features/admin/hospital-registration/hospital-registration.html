@@ -1,7 +1,10 @@
 <section class="registration-page">
   <header class="page-header">
     <h1>Register Hospital</h1>
-    <p class="muted">Only a name and city are required. Everything else can follow later.</p>
+    <p class="muted">
+      Creates the hospital account. Departments, facilities and opening hours are added afterwards
+      from the hospital’s management page.
+    </p>
   </header>
 
   <form [formGroup]="form" (ngSubmit)="save()">
@@ -23,69 +26,33 @@
         </div>
 
         <div class="field">
-          <app-searchable-dropdown
-            label="City *"
-            placeholder="Select a city"
-            emptyMessage="No city found"
-            [items]="cities"
-            [value]="selectedCity()"
-            (valueChange)="onCitySelected($event)"
-          />
-          @if (showError('cityId', 'required')) {
-            <p class="field-error" data-testid="city-error">Select a city</p>
+          <label class="field-label" for="hospitalType">Hospital Type *</label>
+          <select
+            class="form-control"
+            id="hospitalType"
+            formControlName="hospitalType"
+            data-testid="type-select"
+            [attr.aria-invalid]="showError('hospitalType', 'required') ? 'true' : null"
+          >
+            <option value="">Select a type</option>
+            @for (type of hospitalTypes; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+          @if (showError('hospitalType', 'required')) {
+            <p class="field-error" data-testid="type-error">Select a hospital type</p>
           }
         </div>
 
-        <div class="field field--wide">
-          <label class="field-label" for="addressLine">Address</label>
+        <div class="field">
+          <label class="field-label" for="registrationNumber">Registration Number</label>
           <input
             class="form-control"
-            id="addressLine"
+            id="registrationNumber"
             type="text"
-            formControlName="addressLine"
-            data-testid="address-input"
+            formControlName="registrationNumber"
+            data-testid="registration-input"
           />
-        </div>
-
-        <div class="field field--wide">
-          <label class="field-label" for="description">Description</label>
-          <textarea
-            class="form-control form-control--area"
-            id="description"
-            rows="3"
-            formControlName="description"
-            data-testid="description-input"
-          ></textarea>
-        </div>
-      </div>
-    </app-profile-section>
-
-    <app-profile-section title="Contact">
-      <div class="fields">
-        <div class="field">
-          <label class="field-label" for="contactNumber">Phone Number</label>
-          <input
-            class="form-control"
-            id="contactNumber"
-            type="tel"
-            formControlName="contactNumber"
-            data-testid="phone-input"
-          />
-        </div>
-
-        <div class="field">
-          <label class="field-label" for="email">Email</label>
-          <input
-            class="form-control"
-            id="email"
-            type="email"
-            formControlName="email"
-            data-testid="email-input"
-            [attr.aria-invalid]="showError('email', 'email') ? 'true' : null"
-          />
-          @if (showError('email', 'email')) {
-            <p class="field-error" data-testid="email-error">Enter a valid email address</p>
-          }
         </div>
 
         <div class="field">
@@ -105,24 +72,102 @@
             </p>
           }
         </div>
+      </div>
+    </app-profile-section>
 
+    <app-profile-section title="Contact">
+      <div class="fields">
         <div class="field">
-          <label class="field-label" for="rating">Rating</label>
+          <label class="field-label" for="contactPerson">Contact Person *</label>
           <input
             class="form-control"
-            id="rating"
-            type="number"
-            min="0"
-            max="5"
-            step="0.1"
-            formControlName="rating"
-            data-testid="rating-input"
+            id="contactPerson"
+            type="text"
+            autocomplete="name"
+            formControlName="contactPerson"
+            data-testid="contact-person-input"
+            [attr.aria-invalid]="showError('contactPerson', 'required') ? 'true' : null"
+          />
+          @if (showError('contactPerson', 'required')) {
+            <p class="field-error" data-testid="contact-person-error">
+              Enter the contact person’s name
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="email">Email *</label>
+          <input
+            class="form-control"
+            id="email"
+            type="email"
+            autocomplete="email"
+            formControlName="email"
+            data-testid="email-input"
             [attr.aria-invalid]="
-              showError('rating', 'min') || showError('rating', 'max') ? 'true' : null
+              showError('email', 'required') || showError('email', 'email') ? 'true' : null
             "
           />
-          @if (showError('rating', 'min') || showError('rating', 'max')) {
-            <p class="field-error" data-testid="rating-error">Enter a rating between 0 and 5</p>
+          @if (showError('email', 'required')) {
+            <p class="field-error" data-testid="email-error">Enter an email address</p>
+          } @else if (showError('email', 'email')) {
+            <p class="field-error" data-testid="email-error">Enter a valid email address</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contactNumber">Mobile Number *</label>
+          <input
+            class="form-control"
+            id="contactNumber"
+            type="tel"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="tel"
+            placeholder="10-digit number"
+            formControlName="contactNumber"
+            data-testid="phone-input"
+            [attr.aria-invalid]="
+              showError('contactNumber', 'required') || showError('contactNumber', 'pattern')
+                ? 'true'
+                : null
+            "
+          />
+          @if (showError('contactNumber', 'required') || showError('contactNumber', 'pattern')) {
+            <p class="field-error" data-testid="phone-error">Enter a 10-digit mobile number</p>
+          }
+        </div>
+      </div>
+    </app-profile-section>
+
+    <app-profile-section title="Location">
+      <div class="fields">
+        <div class="field">
+          <app-searchable-dropdown
+            label="City *"
+            placeholder="Select a city"
+            emptyMessage="No city found"
+            [items]="cities"
+            [value]="selectedCity()"
+            (valueChange)="onCitySelected($event)"
+          />
+          @if (showError('cityId', 'required')) {
+            <p class="field-error" data-testid="city-error">Select a city</p>
+          }
+        </div>
+
+        <div class="field field--wide">
+          <label class="field-label" for="addressLine">Address *</label>
+          <input
+            class="form-control"
+            id="addressLine"
+            type="text"
+            formControlName="addressLine"
+            data-testid="address-input"
+            [attr.aria-invalid]="showError('addressLine', 'required') ? 'true' : null"
+          />
+          @if (showError('addressLine', 'required')) {
+            <p class="field-error" data-testid="address-error">Enter the address</p>
           }
         </div>
       </div>

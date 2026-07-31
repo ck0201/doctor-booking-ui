@@ -1,5 +1,11 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Hospital, HospitalCardData, OpeningHours, Weekday } from '../models/hospital.model';
+import {
+  Hospital,
+  HospitalCardData,
+  HospitalType,
+  OpeningHours,
+  Weekday,
+} from '../models/hospital.model';
 import { HospitalSearchCriteria } from '../models/hospital-search-criteria.model';
 import { City, District } from '../models/location.model';
 import { Specialty } from '../models/specialty.model';
@@ -20,6 +26,9 @@ import { DoctorService } from './doctor.service';
 export const MAX_DEPARTMENTS = 30;
 export const MAX_FACILITIES = 30;
 
+/** The first hospital account code issued, continuing as HSP-100002 and so on. */
+export const HOSPITAL_CODE_START = 100001;
+
 /** The operational profile the management page owns (ADR-036). */
 export interface HospitalProfileUpdate {
   readonly openingHours: readonly OpeningHours[];
@@ -28,17 +37,24 @@ export interface HospitalProfileUpdate {
   readonly facilityNames: readonly string[];
 }
 
-/** What the registration form collects. Everything but name and city is optional. */
+/**
+ * What creating a hospital account needs — and nothing else (ADR-035).
+ *
+ * Registration captures who the hospital is and how to reach them. Anything
+ * describing what it does or how well it does it belongs to profile completion,
+ * so description and rating are deliberately absent: a draft cannot carry a
+ * claim the form never asked for.
+ */
 export interface HospitalDraft {
   readonly name: string;
   readonly city: City;
+  readonly hospitalType?: HospitalType;
+  readonly contactPerson?: string;
+  readonly registrationNumber?: string;
   readonly addressLine?: string;
-  readonly description?: string;
   readonly contactNumber?: string;
   readonly email?: string;
   readonly website?: string;
-  /** 0 – 5. */
-  readonly rating?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -81,15 +97,16 @@ export class HospitalService {
    * In memory only, like the session in ADR-033: a refresh restores the mock. The
    * id continues the mock's sequence, so it cannot collide with a seeded one.
    *
-   * A registered hospital starts with no departments, facilities or opening hours
-   * — the form does not collect them — and no doctors, because doctorCount is
-   * derived from practices that reference it (ADR-025).
+   * Everything registration does not collect starts at its default — no
+   * departments, facilities or opening hours, no description, no rating, and no
+   * doctors, because doctorCount is derived from practices that reference it
+   * (ADR-025). Those are filled in later during profile completion.
    */
   addHospital(draft: HospitalDraft): Hospital {
     const hospital: Hospital = {
       id: this.nextId(),
+      hospitalCode: `HSP-${this.nextCodeNumber++}`,
       name: draft.name.trim(),
-      rating: draft.rating === undefined ? undefined : { value: draft.rating, reviewCount: 0 },
       address: {
         line: draft.addressLine?.trim() ?? '',
         city: draft.city,
@@ -99,7 +116,10 @@ export class HospitalService {
       doctorCount: 0,
       openingHours: [],
       isOpen24Hours: false,
-      description: draft.description?.trim() ?? '',
+      description: '',
+      hospitalType: draft.hospitalType,
+      contactPerson: draft.contactPerson?.trim() || undefined,
+      registrationNumber: draft.registrationNumber?.trim() || undefined,
       facilities: [],
       contactNumber: draft.contactNumber?.trim() ?? '',
       email: draft.email?.trim() || undefined,
@@ -170,6 +190,14 @@ export class HospitalService {
 
   private nextDepartmentId =
     SPECIALTIES.reduce((highest, specialty) => Math.max(highest, specialty.id), 0) + 1;
+
+  /**
+   * The next account code, a counter like nextDepartmentId above.
+   *
+   * The seeded hospitals carry no code, so the sequence starts clean and cannot
+   * collide with them. In memory only, like the store itself (ADR-035).
+   */
+  private nextCodeNumber = HOSPITAL_CODE_START;
 
   private nextId(): number {
     return this.all().reduce((highest, hospital) => Math.max(highest, hospital.id), 0) + 1;

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AdminDashboard } from './admin-dashboard/admin-dashboard';
 import { HospitalRegistration } from './hospital-registration/hospital-registration';
 import { HospitalManagement } from './hospital-management/hospital-management';
+import { HospitalRegistered } from './hospital-registered/hospital-registered';
 import { DoctorRegistration } from './doctor-registration/doctor-registration';
 
 /**
@@ -11,6 +12,11 @@ import { DoctorRegistration } from './doctor-registration/doctor-registration';
 export default [
   { path: '', component: AdminDashboard, title: 'Admin' },
   { path: 'hospitals/new', component: HospitalRegistration, title: 'Register Hospital' },
+  {
+    path: 'hospitals/:id/registered',
+    component: HospitalRegistered,
+    title: 'Hospital Registered',
+  },
   { path: 'hospitals/:id/manage', component: HospitalManagement, title: 'Manage Hospital' },
   { path: 'doctors/new', component: DoctorRegistration, title: 'Register Doctor' },
 ] satisfies Routes;

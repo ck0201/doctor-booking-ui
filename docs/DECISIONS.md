@@ -1130,6 +1130,31 @@ A registered hospital starts with no departments, facilities or opening hours,
 because the form does not collect them, and doctorCount 0, because that is derived
 from doctors' practices (ADR-025) rather than set here.
 
+Amendment — registration is account creation only
+
+Registration answers who the hospital is and how to reach them: name, type,
+contact person, email, mobile, city, address, and optionally a registration
+number and website. Everything describing what the hospital does, or how well,
+is profile completion and will be done by the hospital itself in a later phase
+rather than by the platform admin registering them.
+
+HospitalDraft therefore no longer carries `description` or `rating`. They had
+survived as optional fields after the form stopped collecting them, which left
+the draft able to express a claim nothing could produce — and a rating in
+particular is the one field an onboarding form has no business accepting, since
+it is earned rather than declared (the same reasoning as the empty credentials
+in ADR-037).
+
+Both remain on the Hospital entity, where the seeded mocks and every read path
+still use them. addHospital now defaults description to '' and leaves rating
+undefined, alongside the empty departments, facilities and opening hours it
+already produced.
+
+This also supersedes ADR-036's summary of registration as "name and city, and
+nothing else". The reason that sentence gave still holds — registration must be
+completable from a phone call — but the field set it described has since grown
+to the contact details above. No operational information was added.
+
 ---
 
 ## ADR-036
@@ -1224,6 +1249,93 @@ What a registered doctor does not get
 Education, registrations, reviews, languages and ratings start empty. The form
 does not collect them, and inventing them would put unverifiable credentials on
 a public profile — the same reasoning as ADR-035.
+
+---
+
+## ADR-038
+
+Decision
+
+A platform admin's responsibility ends when the hospital account exists and its
+credentials have been handed over. Completing the operational profile is the
+hospital admin's job, done after their first sign-in.
+
+Registration therefore finishes at /admin/hospitals/:id/registered, which shows
+the Hospital ID, the username and a temporary password, rather than returning to
+the dashboard.
+
+Reason
+
+Two different people, with two different kinds of knowledge. A platform admin can
+establish that a hospital exists and how to reach it from a phone call — that is
+what ADR-035 scoped registration to. Which departments run, which facilities are
+available and when the doors open are facts only the hospital itself holds
+reliably, and ADR-036 already split them onto their own page for exactly that
+reason. ADR-038 finishes the thought by naming who does it.
+
+Without that boundary the platform admin becomes a data-entry clerk for every
+hospital on the platform, transcribing operational detail second-hand, and every
+listing patients act on is only as accurate as the last phone call. Handing over
+credentials moves the work to the party who can keep it current.
+
+It also gives the two roles a clean audit story once a backend exists: the
+platform admin created the account, and everything after that was the hospital's
+own edit.
+
+The credentials screen is a route, not a page state
+
+The opposite call to ADR-027, which made booking confirmation a state because a
+confirmation had nothing to show unless a booking had just happened in that
+component. Here the page reads the hospital back from HospitalService by route id,
+so it needs nothing passed through navigation and no hidden state: /admin/hospitals/13/registered
+renders on its own.
+
+A malformed id, an unknown id, and a seeded hospital that was never registered all
+resolve to the same not-found state, so the template branches once (ADR-023). The
+last case matters: the mock hospitals carry no account code, and this page must not
+invent credentials for them.
+
+Because the store is in memory (ADR-035), refreshing the credentials screen loses
+the hospital and lands on not-found. That is the honest consequence of not
+persisting, the same as the session in ADR-033, and the page says so rather than
+implying the password can be retrieved later.
+
+Mock credentials
+
+Hospital ID is a stored field, `hospitalCode`, issued from a counter starting at
+HSP-100001. Stored rather than derived from `id` so the code an admin reads out
+cannot change if the list is later ordered or filtered differently. The seeded
+hospitals have none, which is what makes them distinguishable from registered
+ones.
+
+Username is the email the form already collects. No second identifier is minted,
+so there is nothing that can disagree with the contact address.
+
+The temporary password is the fixed constant `Temp@1234`, the same call ADR-033
+made with MOCK_OTP. A random string would imply a credential store, an expiry and
+a reset path — none of which exist. It is exported from the page so a future
+hospital sign-in can import the one value rather than restating it.
+
+No User model, no authentication and no storage were introduced. The credentials
+are derived from hospital data at render time and exist nowhere else.
+
+Copy Credentials
+
+Interface only, per the brief: no Clipboard API, no toast. The button is in the
+markup so the layout and the action set are settled; wiring it is a later change
+that touches one handler.
+
+Consequences
+
+Hospital Registration no longer navigates to /admin on save, so
+hospital-registration.spec.ts asserts the wrong destination and will need
+updating. Left alone deliberately — tests run as their own milestone.
+
+The management page at /admin/hospitals/:id/manage stays as it is and remains
+admin-only. It is the interim path to the operational profile until the hospital
+portal exists, which is a later phase and out of scope here.
+
+---
 
 Future architectural decisions should be recorded here before implementation.
 

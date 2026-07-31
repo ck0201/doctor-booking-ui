@@ -6,6 +6,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 
 import { HospitalRegistration } from './hospital-registration';
 import { AdminDashboard } from '../admin-dashboard/admin-dashboard';
+import { HOSPITAL_TYPES } from '@core/models/hospital.model';
 import { HospitalService } from '@core/services/hospital.service';
 import { AuthService, MOCK_OTP } from '@core/services/auth.service';
 import { roleGuard } from '@core/guards/auth.guard';
@@ -47,6 +48,14 @@ describe('HospitalRegistration', () => {
     harness.detectChanges();
   };
 
+  /** A select is bound to change, not input, so it needs its own helper. */
+  const choose = (id: string, value: string) => {
+    const field = testId(id) as HTMLSelectElement;
+    field.value = value;
+    field.dispatchEvent(new Event('change'));
+    harness.detectChanges();
+  };
+
   /** Picks the first city through the dropdown, as a user would. */
   const pickCity = () => {
     (query('app-searchable-dropdown input') as HTMLElement).click();
@@ -55,9 +64,15 @@ describe('HospitalRegistration', () => {
     harness.detectChanges();
   };
 
+  /** Every field registration requires; registration number and website are not. */
   const fillValid = () => {
     type('name-input', 'New Care Clinic');
+    choose('type-select', 'Clinic');
+    type('contact-person-input', 'Asha Verma');
+    type('email-input', 'hello@clinic.test');
+    type('phone-input', '9876500011');
     pickCity();
+    type('address-input', 'Station Road');
   };
 
   beforeEach(async () => {
@@ -132,16 +147,36 @@ describe('HospitalRegistration', () => {
 
       for (const id of [
         'name-input',
-        'address-input',
-        'description-input',
-        'phone-input',
-        'email-input',
+        'type-select',
+        'registration-input',
         'website-input',
-        'rating-input',
+        'contact-person-input',
+        'email-input',
+        'phone-input',
+        'address-input',
       ]) {
         expect(testId(id)).toBeTruthy();
       }
       expect(query('app-searchable-dropdown')).toBeTruthy();
+    });
+
+    it('offers every hospital type', async () => {
+      await open();
+
+      const options = Array.from((testId('type-select') as HTMLSelectElement).options).map(
+        (option) => option.value,
+      );
+
+      expect(options).toEqual(['', ...HOSPITAL_TYPES]);
+    });
+
+    it('collects no operational detail — that belongs to the management page', async () => {
+      await open();
+
+      // ADR-036: departments, facilities and opening hours are set there, not here.
+      for (const id of ['description-input', 'rating-input', 'departments-input']) {
+        expect(testId(id)).toBeNull();
+      }
     });
 
     it('offers Save and Cancel', async () => {
@@ -155,7 +190,7 @@ describe('HospitalRegistration', () => {
       await open();
 
       expect(query('app-searchable-dropdown')).toBeTruthy();
-      expect(harness.routeNativeElement?.querySelectorAll('app-profile-section').length).toBe(2);
+      expect(harness.routeNativeElement?.querySelectorAll('app-profile-section').length).toBe(3);
     });
   });
 
@@ -175,6 +210,36 @@ describe('HospitalRegistration', () => {
       expect(save().disabled).toBe(true);
     });
 
+    it('requires a hospital type', async () => {
+      const page = await open();
+      fillValid();
+
+      choose('type-select', '');
+
+      expect(page.form.controls.hospitalType.hasError('required')).toBe(true);
+      expect(save().disabled).toBe(true);
+    });
+
+    it('requires a contact person that is not just whitespace', async () => {
+      const page = await open();
+      fillValid();
+
+      type('contact-person-input', '   ');
+
+      expect(page.form.controls.contactPerson.hasError('required')).toBe(true);
+      expect(save().disabled).toBe(true);
+    });
+
+    it('requires an email', async () => {
+      const page = await open();
+      fillValid();
+
+      type('email-input', '');
+
+      expect(page.form.controls.email.hasError('required')).toBe(true);
+      expect(save().disabled).toBe(true);
+    });
+
     it('requires a city', async () => {
       const page = await open();
 
@@ -184,7 +249,17 @@ describe('HospitalRegistration', () => {
       expect(save().disabled).toBe(true);
     });
 
-    it('enables Save once name and city are given', async () => {
+    it('requires an address that is not just whitespace', async () => {
+      const page = await open();
+      fillValid();
+
+      type('address-input', '   ');
+
+      expect(page.form.controls.addressLine.hasError('required')).toBe(true);
+      expect(save().disabled).toBe(true);
+    });
+
+    it('enables Save once every required field is given', async () => {
       await open();
 
       fillValid();
@@ -205,6 +280,21 @@ describe('HospitalRegistration', () => {
       expect(save().disabled).toBe(false);
     });
 
+    it('requires exactly ten digits for the mobile number', async () => {
+      const page = await open();
+      fillValid();
+
+      for (const bad of ['12345', '98765000112', '98765 0001', 'abcdefghij', '+919876500011']) {
+        type('phone-input', bad);
+        expect(page.form.controls.contactNumber.hasError('pattern')).toBe(true);
+        expect(save().disabled).toBe(true);
+      }
+
+      type('phone-input', '9876500011');
+      expect(page.form.controls.contactNumber.valid).toBe(true);
+      expect(save().disabled).toBe(false);
+    });
+
     it('rejects a malformed website but accepts a full URL', async () => {
       const page = await open();
       fillValid();
@@ -219,34 +309,13 @@ describe('HospitalRegistration', () => {
       expect(save().disabled).toBe(false);
     });
 
-    it('keeps email and website optional', async () => {
-      await open();
-
-      fillValid();
-
-      expect(save().disabled).toBe(false);
-    });
-
-    it('rejects a rating outside 0 to 5', async () => {
+    it('keeps the registration number and website optional', async () => {
       const page = await open();
+
       fillValid();
 
-      type('rating-input', '6');
-      expect(page.form.controls.rating.hasError('max')).toBe(true);
-      expect(save().disabled).toBe(true);
-
-      type('rating-input', '-1');
-      expect(page.form.controls.rating.hasError('min')).toBe(true);
-    });
-
-    it('accepts a decimal rating and both bounds', async () => {
-      const page = await open();
-      fillValid();
-
-      for (const value of ['0', '4.5', '5']) {
-        type('rating-input', value);
-        expect(page.form.controls.rating.valid).toBe(true);
-      }
+      expect(page.form.controls.registrationNumber.value).toBe('');
+      expect(page.form.controls.website.value).toBe('');
       expect(save().disabled).toBe(false);
     });
 
@@ -267,8 +336,17 @@ describe('HospitalRegistration', () => {
       page.save();
       harness.detectChanges();
 
-      expect(testId('name-error')).toBeTruthy();
-      expect(testId('city-error')).toBeTruthy();
+      for (const id of [
+        'name-error',
+        'type-error',
+        'contact-person-error',
+        'email-error',
+        'phone-error',
+        'city-error',
+        'address-error',
+      ]) {
+        expect(testId(id)).toBeTruthy();
+      }
     });
 
     it('clears a message once the field is valid', async () => {
@@ -296,38 +374,60 @@ describe('HospitalRegistration', () => {
       expect(router.url).toBe('/admin');
     });
 
-    it('trims values before saving', async () => {
-      await open();
-      type('name-input', '  New Care Clinic  ');
-      pickCity();
-      type('address-input', '  Station Road  ');
-      type('description-input', '  A new clinic.  ');
-
-      save().click();
-      await harness.fixture.whenStable();
-
-      const created = hospitals.getHospitals().at(-1)!;
-      expect(created.name).toBe('New Care Clinic');
-      expect(hospitals.getById(created.id)?.address.line).toBe('Station Road');
-      expect(hospitals.getById(created.id)?.description).toBe('A new clinic.');
-    });
-
-    it('saves the optional fields it was given', async () => {
+    it('saves the account details it was given', async () => {
       await open();
       fillValid();
-      type('phone-input', '+91 5568 100200');
-      type('email-input', 'hello@clinic.test');
+      type('registration-input', 'UP/HOSP/2024/0199');
       type('website-input', 'https://clinic.test');
-      type('rating-input', '4.5');
 
       save().click();
       await harness.fixture.whenStable();
 
       const created = hospitals.getById(hospitals.getHospitals().at(-1)!.id)!;
-      expect(created.contactNumber).toBe('+91 5568 100200');
+      expect(created.name).toBe('New Care Clinic');
+      expect(created.hospitalType).toBe('Clinic');
+      expect(created.contactPerson).toBe('Asha Verma');
       expect(created.email).toBe('hello@clinic.test');
+      expect(created.contactNumber).toBe('9876500011');
+      expect(created.registrationNumber).toBe('UP/HOSP/2024/0199');
       expect(created.website).toBe('https://clinic.test');
-      expect(created.rating).toEqual({ value: 4.5, reviewCount: 0 });
+      expect(created.address.line).toBe('Station Road');
+    });
+
+    it('trims values before saving', async () => {
+      await open();
+      fillValid();
+      type('name-input', '  New Care Clinic  ');
+      type('contact-person-input', '  Asha Verma  ');
+      type('address-input', '  Station Road  ');
+      type('registration-input', '  UP/HOSP/2024/0199  ');
+
+      save().click();
+      await harness.fixture.whenStable();
+
+      const created = hospitals.getById(hospitals.getHospitals().at(-1)!.id)!;
+      expect(created.name).toBe('New Care Clinic');
+      expect(created.contactPerson).toBe('Asha Verma');
+      expect(created.address.line).toBe('Station Road');
+      expect(created.registrationNumber).toBe('UP/HOSP/2024/0199');
+    });
+
+    it('leaves the operational profile empty for the management page', async () => {
+      await open();
+      fillValid();
+
+      save().click();
+      await harness.fixture.whenStable();
+
+      // ADR-035: no departments, facilities, opening hours or rating are invented.
+      const created = hospitals.getById(hospitals.getHospitals().at(-1)!.id)!;
+      expect(created.departments).toEqual([]);
+      expect(created.facilities).toEqual([]);
+      expect(created.openingHours).toEqual([]);
+      expect(created.isOpen24Hours).toBe(false);
+      expect(created.rating).toBeUndefined();
+      expect(created.description).toBe('');
+      expect(created.doctorCount).toBe(0);
     });
 
     it('does nothing when Save is invoked on an invalid form', async () => {

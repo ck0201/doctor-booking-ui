@@ -441,13 +441,13 @@ describe('HospitalService.addHospital', () => {
       name: '  New Care Clinic  ',
       city: deoria(),
       addressLine: '  Station Road  ',
-      description: '  A clinic.  ',
+      contactPerson: '  Asha Verma  ',
       contactNumber: '  +91 5568 100200  ',
     });
 
     expect(created.name).toBe('New Care Clinic');
     expect(created.address.line).toBe('Station Road');
-    expect(created.description).toBe('A clinic.');
+    expect(created.contactPerson).toBe('Asha Verma');
     expect(created.contactNumber).toBe('+91 5568 100200');
   });
 
@@ -460,12 +460,11 @@ describe('HospitalService.addHospital', () => {
     expect(created.address.district.id).toBe(salempur.districtId);
   });
 
-  it('records a rating with no reviews, or none at all', () => {
-    const rated = service.addHospital({ name: 'Rated', city: deoria(), rating: 4.5 });
-    const unrated = service.addHospital({ name: 'Unrated', city: deoria() });
+  it('carries no rating or description — registration does not collect them', () => {
+    const created = service.addHospital({ name: 'New Care Clinic', city: deoria() });
 
-    expect(rated.rating).toEqual({ value: 4.5, reviewCount: 0 });
-    expect(unrated.rating).toBeUndefined();
+    expect(created.rating).toBeUndefined();
+    expect(created.description).toBe('');
   });
 
   it('keeps email and website only when given', () => {

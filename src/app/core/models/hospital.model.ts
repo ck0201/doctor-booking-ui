@@ -48,12 +48,35 @@ export interface HospitalCardData {
   readonly isOpen24Hours: boolean;
 }
 
+export const HOSPITAL_TYPES = [
+  'General Hospital',
+  'Multi-speciality Hospital',
+  'Clinic',
+  'Nursing Home',
+  'Diagnostic Centre',
+] as const;
+
+export type HospitalType = (typeof HOSPITAL_TYPES)[number];
+
 /** The full hospital profile (mirrors ADR-020). */
 export interface Hospital extends HospitalCardData {
   readonly description: string;
   readonly facilities: readonly string[];
   readonly contactNumber: string;
-  /** Collected at registration; the seeded mocks do not carry these. */
+  /**
+   * Account details captured when a platform admin creates the hospital.
+   * The seeded mocks predate registration and do not carry them.
+   */
+  /**
+   * Public account identifier issued at registration, e.g. HSP-100001.
+   *
+   * Stored rather than derived from `id`, so the code an admin reads out stays
+   * the same regardless of how the list is ordered or filtered later.
+   */
+  readonly hospitalCode?: string;
+  readonly hospitalType?: HospitalType;
+  readonly contactPerson?: string;
+  readonly registrationNumber?: string;
   readonly email?: string;
   readonly website?: string;
 }

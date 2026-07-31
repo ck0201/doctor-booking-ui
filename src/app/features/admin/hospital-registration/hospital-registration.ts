@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HOSPITAL_TYPES, HospitalType } from '@core/models/hospital.model';
 import { City } from '@core/models/location.model';
 import { HospitalService } from '@core/services/hospital.service';
 import { LocationService } from '@core/services/location.service';
@@ -36,9 +37,8 @@ function notBlank(control: AbstractControl): ValidationErrors | null {
 /**
  * Admin-only hospital registration (ADR-035).
  *
- * The only Reactive Forms page in the app: eight fields with cross-cutting
- * validation is where a FormGroup earns its keep, whereas the search panels are
- * signal-bound (ADR-011 left that door open).
+ * Creates the hospital account and nothing more: who they are, how to reach
+ * them, and where they are. Operational setup lives on the management page.
  *
  * City is a SearchableDropdown rather than free text, because a hospital's
  * address holds a real City and its district is derived from it.
@@ -59,15 +59,25 @@ export class HospitalRegistration {
   /** Every city in the launch districts (ADR-004). */
   readonly cities = this.locationService.getDistricts().flatMap((district) => district.cities);
 
+  protected readonly hospitalTypes = HOSPITAL_TYPES;
+
+  /**
+   * Account details only.
+   *
+   * Departments, facilities and opening hours are deliberately absent: they are
+   * operational setup, completed later on the management page (ADR-036), and
+   * asking for them here would stall an admin who only wants the account created.
+   */
   readonly form = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, notBlank]],
+    hospitalType: ['' as HospitalType | '', Validators.required],
+    contactPerson: ['', [Validators.required, notBlank]],
+    email: ['', [Validators.required, Validators.email]],
+    contactNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     cityId: [null as number | null, Validators.required],
-    addressLine: [''],
-    description: [''],
-    contactNumber: [''],
-    email: ['', Validators.email],
+    addressLine: ['', [Validators.required, notBlank]],
+    registrationNumber: [''],
     website: ['', urlValidator],
-    rating: [null as number | null, [Validators.min(0), Validators.max(5)]],
   });
 
   /** Mirrors the dropdown's selection into the control it stands in for. */
@@ -110,18 +120,21 @@ export class HospitalRegistration {
       return;
     }
 
-    this.hospitalService.addHospital({
+    const created = this.hospitalService.addHospital({
       name: value.name,
       city,
+      hospitalType: value.hospitalType || undefined,
+      contactPerson: value.contactPerson,
+      registrationNumber: value.registrationNumber,
       addressLine: value.addressLine,
-      description: value.description,
       contactNumber: value.contactNumber,
       email: value.email,
       website: value.website,
-      rating: value.rating ?? undefined,
     });
 
-    this.router.navigateByUrl('/admin');
+    // The credentials screen, not the dashboard: handing them over is the last
+    // step of onboarding and the admin has not finished until they have (ADR-038).
+    this.router.navigateByUrl(`/admin/hospitals/${created.id}/registered`);
   }
 
   cancel(): Promise<boolean> {
