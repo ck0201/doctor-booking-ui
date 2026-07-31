@@ -1,0 +1,184 @@
+<section class="setup-page">
+  @if (hospital(); as hospital) {
+    <header class="page-header">
+      <h1>Hospital Setup</h1>
+
+      <p class="subtitle" data-testid="step">Step {{ step }} of {{ totalSteps }}</p>
+
+      <p class="progress" data-testid="progress">
+        <span class="progress-bar" aria-hidden="true">
+          <span class="progress-fill" [style.width.%]="percentComplete"></span>
+        </span>
+        <span class="progress-value">{{ percentComplete }}%</span>
+      </p>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <app-profile-section title="Hospital Profile">
+        <p class="muted">
+          Your name, type, registration number, email and address are managed by the platform
+          administrator. Contact details are yours to keep current.
+        </p>
+
+        <div class="fields">
+          <div class="field">
+            <label class="field-label" for="name">Hospital Name</label>
+            <input
+              class="form-control form-control--locked"
+              id="name"
+              type="text"
+              readonly
+              data-testid="name-input"
+              [value]="hospital.name"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="hospitalType">Hospital Type</label>
+            <input
+              class="form-control form-control--locked"
+              id="hospitalType"
+              type="text"
+              readonly
+              data-testid="type-input"
+              [value]="hospital.hospitalType ?? '—'"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="registrationNumber">Registration Number</label>
+            <input
+              class="form-control form-control--locked"
+              id="registrationNumber"
+              type="text"
+              readonly
+              data-testid="registration-input"
+              [value]="hospital.registrationNumber ?? '—'"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="email">Email</label>
+            <input
+              class="form-control form-control--locked"
+              id="email"
+              type="text"
+              readonly
+              data-testid="email-input"
+              [value]="hospital.email ?? '—'"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="city">City</label>
+            <input
+              class="form-control form-control--locked"
+              id="city"
+              type="text"
+              readonly
+              data-testid="city-input"
+              [value]="hospital.address.city.name"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="address">Address</label>
+            <input
+              class="form-control form-control--locked"
+              id="address"
+              type="text"
+              readonly
+              data-testid="address-input"
+              [value]="hospital.address.line || '—'"
+            />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="contactPerson">Contact Person *</label>
+            <input
+              class="form-control"
+              id="contactPerson"
+              type="text"
+              autocomplete="name"
+              formControlName="contactPerson"
+              data-testid="contact-person-input"
+              [attr.aria-invalid]="showError('contactPerson', 'required') ? 'true' : null"
+            />
+            @if (showError('contactPerson', 'required')) {
+              <p class="field-error" data-testid="contact-person-error">
+                Enter the contact person’s name
+              </p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="contactNumber">Mobile Number *</label>
+            <input
+              class="form-control"
+              id="contactNumber"
+              type="tel"
+              inputmode="numeric"
+              maxlength="10"
+              autocomplete="tel"
+              placeholder="10-digit number"
+              formControlName="contactNumber"
+              data-testid="phone-input"
+              [attr.aria-invalid]="
+                showError('contactNumber', 'required') || showError('contactNumber', 'pattern')
+                  ? 'true'
+                  : null
+              "
+            />
+            @if (showError('contactNumber', 'required') || showError('contactNumber', 'pattern')) {
+              <p class="field-error" data-testid="phone-error">Enter a 10-digit mobile number</p>
+            }
+          </div>
+
+          <div class="field field--wide">
+            <label class="field-label" for="website">Website</label>
+            <input
+              class="form-control"
+              id="website"
+              type="url"
+              placeholder="https://example.com"
+              formControlName="website"
+              data-testid="website-input"
+              [attr.aria-invalid]="showError('website', 'url') ? 'true' : null"
+            />
+            @if (showError('website', 'url')) {
+              <p class="field-error" data-testid="website-error">
+                Enter a full URL, starting with https://
+              </p>
+            }
+          </div>
+        </div>
+      </app-profile-section>
+
+      <div class="actions">
+        <button class="btn btn--primary" type="submit" data-testid="save" [disabled]="!canSave()">
+          Save and Continue
+        </button>
+
+        <a
+          class="btn btn--ghost"
+          data-testid="back"
+          routerLink="/hospital/welcome"
+          [queryParams]="{ hospitalId: hospital.id }"
+        >
+          Back
+        </a>
+      </div>
+    </form>
+  } @else {
+    <app-empty-state
+      class="unavailable"
+      data-testid="unavailable"
+      title="Onboarding session unavailable"
+    >
+      We could not tell which hospital is being set up. Mock accounts live in memory only, so
+      reloading clears them — register a hospital again, then sign in without refreshing.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/">Back to Home</a>
+    </app-empty-state>
+  }
+</section>

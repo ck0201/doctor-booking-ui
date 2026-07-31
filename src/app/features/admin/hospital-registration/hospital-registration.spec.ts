@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { Router, provideRouter } from '@angular/router';
+import { Router, provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
 import { HospitalRegistration } from './hospital-registration';
@@ -78,20 +78,24 @@ describe('HospitalRegistration', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([
-          { path: '', component: LandingComponent },
-          { path: 'login', component: LoginComponent },
-          {
-            path: 'doctor/dashboard',
-            canActivate: [roleGuard('doctor')],
-            component: DoctorComponent,
-          },
-          {
-            path: 'admin',
-            canActivate: [roleGuard('admin')],
-            loadChildren: () => import('../admin.routes'),
-          },
-        ]),
+        provideRouter(
+          [
+            { path: '', component: LandingComponent },
+            { path: 'login', component: LoginComponent },
+            {
+              path: 'doctor/dashboard',
+              canActivate: [roleGuard('doctor')],
+              component: DoctorComponent,
+            },
+            {
+              path: 'admin',
+              canActivate: [roleGuard('admin')],
+              loadChildren: () => import('../admin.routes'),
+            },
+          ],
+          // Saving now lands on the credentials page, which reads :id as an input.
+          withComponentInputBinding(),
+        ),
       ],
     });
 
@@ -362,7 +366,7 @@ describe('HospitalRegistration', () => {
   });
 
   describe('saving', () => {
-    it('registers the hospital and navigates to the dashboard', async () => {
+    it('registers the hospital and hands over its credentials', async () => {
       const before = hospitals.getHospitals().length;
       await open();
       fillValid();
@@ -371,7 +375,9 @@ describe('HospitalRegistration', () => {
       await harness.fixture.whenStable();
 
       expect(hospitals.getHospitals().length).toBe(before + 1);
-      expect(router.url).toBe('/admin');
+      // Onboarding is not finished until the credentials are shown (ADR-038).
+      const created = hospitals.getHospitals().at(-1)!;
+      expect(router.url).toBe(`/admin/hospitals/${created.id}/registered`);
     });
 
     it('saves the account details it was given', async () => {

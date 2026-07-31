@@ -32,7 +32,8 @@
 
       <p class="note">
         The password is temporary and shared for every mock account. Nothing is stored, emailed or
-        sent by SMS — this screen is the only place it appears.
+        sent by SMS — this screen is the only place it appears, and the account only exists until
+        the page is reloaded.
       </p>
     </app-profile-section>
 
@@ -41,6 +42,15 @@
       <button class="btn btn--primary" type="button" data-testid="copy-credentials">
         Copy Credentials
       </button>
+
+      <!--
+        routerLink, so trying the credentials stays inside the running app. The
+        account lives in a signal seeded per document load (ADR-035), so reaching
+        the sign-in by typing its URL would reload the app and discard it.
+      -->
+      <a class="btn btn--ghost" data-testid="open-hospital-login" routerLink="/hospital/login">
+        Open Hospital Sign In
+      </a>
 
       <a class="btn btn--ghost" data-testid="back-to-dashboard" routerLink="/admin">
         Back to Admin Dashboard

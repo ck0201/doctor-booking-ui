@@ -48,6 +48,19 @@ export interface HospitalProfileUpdate {
 }
 
 /**
+ * The contact details a hospital may change about itself (ADR-038).
+ *
+ * Deliberately three fields. Name, type, registration number, email, city and
+ * address are account and legal information the platform admin controls, so they
+ * are not in this shape and cannot be written through it.
+ */
+export interface HospitalContactUpdate {
+  readonly contactPerson: string;
+  readonly contactNumber: string;
+  readonly website: string;
+}
+
+/**
  * What creating a hospital account needs — and nothing else (ADR-035).
  *
  * Registration captures who the hospital is and how to reach them. Anything
@@ -138,6 +151,32 @@ export class HospitalService {
 
     this.store.update((hospitals) => [...hospitals, hospital]);
     return hospital;
+  }
+
+  /**
+   * Updates the contact details a hospital owns (ADR-038).
+   *
+   * Same shape as updateHospitalProfile below: everything not named is carried
+   * through untouched, and an unknown id is ignored rather than throwing so a
+   * stale link cannot break the caller.
+   */
+  updateHospitalContact(id: number, update: HospitalContactUpdate): Hospital | undefined {
+    const existing = this.getById(id);
+    if (!existing) {
+      return undefined;
+    }
+
+    const updated: Hospital = {
+      ...existing,
+      contactPerson: update.contactPerson.trim() || undefined,
+      contactNumber: update.contactNumber.trim(),
+      website: update.website.trim() || undefined,
+    };
+
+    this.store.update((hospitals) =>
+      hospitals.map((hospital) => (hospital.id === id ? updated : hospital)),
+    );
+    return updated;
   }
 
   /**

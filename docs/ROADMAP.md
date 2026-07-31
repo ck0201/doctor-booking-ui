@@ -143,6 +143,21 @@ Validates the email against hospitals registered in this session plus the issued
 temporary password, then lands on `/hospital/welcome`. No session, guard or role
 is established. `/hospital/welcome` is a placeholder for the next phase.
 
+✅ Hospital Welcome — `/hospital/welcome?hospitalId=`, first screen after sign-in — ADR-038
+
+Hospital name, onboarding summary, estimated setup time and a static progress
+indicator. Start Setup reaches the `/hospital/setup` placeholder. The id travels
+as a query parameter rather than a session, so a refresh shows the EmptyState.
+
+✅ Hospital Setup — Step 1 of 4, Hospital Profile at `/hospital/setup?hospitalId=` — ADR-038
+
+Contact person, phone and website are editable; name, type, registration number,
+email, city and address are read-only platform-admin data. Saves through
+HospitalService.updateHospitalContact and continues to the
+`/hospital/setup/departments` placeholder.
+
+⬜ Hospital Setup — Steps 2–4: departments, doctors, publishing
+
 ⬜ Hospital Portal — profile completion after first sign-in — ADR-038
 
 The management page above is the interim, admin-only path until this exists.

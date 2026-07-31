@@ -1,0 +1,64 @@
+<section class="welcome-page">
+  @if (hospital(); as hospital) {
+    <header class="page-header">
+      <p class="eyebrow">Welcome to Doctor Booking Platform</p>
+
+      <h1>
+        Welcome, <span data-testid="hospital-name">{{ hospital.name }}</span>
+      </h1>
+
+      <p class="muted">
+        Your hospital account has been created successfully. Let’s complete a few setup steps before
+        your hospital becomes available to patients.
+      </p>
+    </header>
+
+    <app-profile-section title="Your onboarding">
+      <ol class="steps" data-testid="onboarding-steps">
+        @for (step of steps; track step.label) {
+          <li class="step" [class.step--done]="step.done">
+            <span class="step-icon" aria-hidden="true">{{ step.done ? '✔' : '⏳' }}</span>
+            <span class="step-label">{{ step.label }}</span>
+            <span class="step-status">{{ step.done ? 'Done' : 'To do' }}</span>
+          </li>
+        }
+      </ol>
+
+      <dl class="facts">
+        <div class="fact">
+          <dt>Estimated setup time</dt>
+          <dd data-testid="estimated-time">{{ estimatedSetupTime }}</dd>
+        </div>
+
+        <div class="fact">
+          <dt>Setup progress</dt>
+          <dd data-testid="progress">Step 0 of {{ steps.length }} · 0%</dd>
+        </div>
+      </dl>
+    </app-profile-section>
+
+    <div class="actions">
+      <a
+        class="btn btn--primary"
+        data-testid="start-setup"
+        routerLink="/hospital/setup"
+        [queryParams]="{ hospitalId: hospital.id }"
+      >
+        Start Setup
+      </a>
+
+      <a class="btn btn--ghost" data-testid="back-to-home" routerLink="/">Back to Home</a>
+    </div>
+  } @else {
+    <app-empty-state
+      class="unavailable"
+      data-testid="unavailable"
+      title="Onboarding session unavailable"
+    >
+      We could not tell which hospital is signing in. Mock accounts live in memory only, so
+      reloading clears them — register a hospital again, then sign in without refreshing.
+
+      <a emptyStateActions class="btn btn--primary" routerLink="/">Back to Home</a>
+    </app-empty-state>
+  }
+</section>

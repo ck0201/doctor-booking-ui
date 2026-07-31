@@ -1,38 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HOSPITAL_TYPES, HospitalType } from '@core/models/hospital.model';
 import { City } from '@core/models/location.model';
 import { HospitalService } from '@core/services/hospital.service';
 import { LocationService } from '@core/services/location.service';
+import { PHONE_PATTERN, notBlank, urlValidator } from '@core/utils/hospital-validators';
 import { ProfileSection } from '@shared/components/ui/profile-section/profile-section';
 import { SearchableDropdown } from '@shared/components/forms/searchable-dropdown/searchable-dropdown';
-
-/** Optional, but must parse as an absolute http(s) URL when present. */
-function urlValidator(control: AbstractControl): ValidationErrors | null {
-  const value = (control.value ?? '').trim();
-  if (!value) {
-    return null;
-  }
-
-  try {
-    const url = new URL(value);
-    return url.protocol === 'http:' || url.protocol === 'https:' ? null : { url: true };
-  } catch {
-    return { url: true };
-  }
-}
-
-/** Rejects a blank-but-not-empty value, which Validators.required accepts. */
-function notBlank(control: AbstractControl): ValidationErrors | null {
-  return (control.value ?? '').trim() ? null : { required: true };
-}
 
 /**
  * Admin-only hospital registration (ADR-035).
@@ -73,7 +48,7 @@ export class HospitalRegistration {
     hospitalType: ['' as HospitalType | '', Validators.required],
     contactPerson: ['', [Validators.required, notBlank]],
     email: ['', [Validators.required, Validators.email]],
-    contactNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+    contactNumber: ['', [Validators.required, Validators.pattern(PHONE_PATTERN)]],
     cityId: [null as number | null, Validators.required],
     addressLine: ['', [Validators.required, notBlank]],
     registrationNumber: [''],

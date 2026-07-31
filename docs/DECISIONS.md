@@ -1355,6 +1355,26 @@ stores nothing.
 One error message covers both a wrong email and a wrong password, so the form does
 not confirm whether an account exists.
 
+What a hospital may edit about itself
+
+Setup step one lets a hospital change its contact person, phone and website, and
+shows its name, type, registration number, email, city and address read-only. The
+split follows this decision's own logic: the read-only fields are the account and
+legal identity the platform admin established and can verify, while contact details
+are operational facts that go stale and that only the hospital notices.
+
+Enforced by shape, not by disabling inputs. The three editable fields are the whole
+FormGroup, and HospitalContactUpdate carries only those three, so there is no path
+from this page that could write a name or an email even if the markup changed.
+
+The hospital travels through the wizard as the same ?hospitalId= query parameter
+the welcome page uses, and every step resolves it through the one not-found path
+(ADR-023). Still no session, so a refresh mid-wizard shows the unavailable state.
+
+The validators registration already used — notBlank, the ten-digit phone pattern
+and the optional-http(s) URL check — moved to @core/utils/hospital-validators when
+this page became their second consumer, so the two forms cannot drift apart.
+
 ---
 
 Future architectural decisions should be recorded here before implementation.

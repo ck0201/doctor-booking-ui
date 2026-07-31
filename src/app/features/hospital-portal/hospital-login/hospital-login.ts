@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Hospital } from '@core/models/hospital.model';
 import { HospitalService, TEMPORARY_PASSWORD } from '@core/services/hospital.service';
 
 /**
@@ -61,30 +62,34 @@ export class HospitalLogin {
       return;
     }
 
-    if (!this.matches(this.email().trim().toLowerCase(), this.password())) {
+    const hospital = this.findAccount(this.email().trim().toLowerCase(), this.password());
+    if (!hospital) {
       this.rejected.set(true);
       return;
     }
 
-    this.router.navigateByUrl('/hospital/welcome');
+    // The welcome page needs to know who signed in, and no session exists to tell
+    // it. The id travels as a query parameter, read there like any other route
+    // parameter (ADR-021), so nothing is stored.
+    this.router.navigate(['/hospital/welcome'], { queryParams: { hospitalId: hospital.id } });
   }
 
   /**
-   * A registered hospital with this email, and the issued password.
+   * The registered hospital with this email, if the password is the issued one.
    *
    * The list read is narrow (ADR-020), so each candidate is fetched back in full
    * to reach its email — thirteen records in memory, and it keeps the
    * narrow/aggregate split intact rather than widening the card contract.
    */
-  private matches(email: string, password: string): boolean {
+  private findAccount(email: string, password: string): Hospital | undefined {
     if (password !== TEMPORARY_PASSWORD) {
-      return false;
+      return undefined;
     }
 
     return this.hospitalService
       .getHospitals()
       .map((hospital) => this.hospitalService.getById(hospital.id))
-      .some(
+      .find(
         (hospital) => !!hospital?.hospitalCode && hospital.email?.toLowerCase().trim() === email,
       );
   }
